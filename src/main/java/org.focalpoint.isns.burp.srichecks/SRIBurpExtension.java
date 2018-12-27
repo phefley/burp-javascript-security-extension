@@ -218,7 +218,6 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
         List<IScanIssue> issues = new ArrayList<>();
         // Create a script finder for this instance
         ScriptFinder scriptFinder = new ScriptFinder();
-        scriptFinder.startDriver();
         // Find the URL
         String url = helpers.analyzeRequest(baseRequestResponse).getUrl().toString();
         // Get the response contents for the passive scan
@@ -262,7 +261,6 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
         issues.addAll(checkForSriIssues(baseRequestResponse, scriptFinder));
 	    System.out.println("[" + url + "] - checking JavaScript resources against threat intel.");
         issues.addAll(checkJavaScriptThreatIntel(baseRequestResponse, scriptFinder));
-        scriptFinder.stopDriver();
 	    System.out.println("[" + url + "] - checks complete!");
 
         if (issues.size() > 0){

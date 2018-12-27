@@ -8,6 +8,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import java.util.concurrent.TimeUnit;
 
 // This is for JDK 11
 /*
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ScriptFinder{
+    private final Integer PAGE_WAIT_TIMEOUT = 10; // seconds
     private String url="NONE";
     private String html;
     private List<String> domScripts = new ArrayList<>();
@@ -89,9 +91,11 @@ public class ScriptFinder{
         //System.setProperty("webdriver.chrome.driver", "/Users/zarak/Downloads/chromedriver"); // set the path for the chromedriver binary
 	    System.setProperty("webdriver.chrome.driver", "/usr/lib/chromium-browser/chromedriver");
         driver = new ChromeDriver(options);
+        driver.manage().timeouts().implicitlyWait(PAGE_WAIT_TIMEOUT, TimeUnit.SECONDS); // Wait for the page to be completely loaded. Or reasonably loaded.
     }
 
     public void checkForDomScripts(){
+        startDriver();
         driver.get(url);
         List<WebElement> scripts = driver.findElements(By.xpath("//script"));
         for (WebElement scriptElement : scripts) {
@@ -108,6 +112,7 @@ public class ScriptFinder{
                 }
             }
         }
+        stopDriver();
     }
 
     public void stopDriver(){
