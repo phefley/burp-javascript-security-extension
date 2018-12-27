@@ -62,7 +62,6 @@ public class ScriptFinderTest {
         String testUrl = "https://www.focal-point.com";
         testunit.setUrl(testUrl);
         testunit.retrieveHtml();
-        testunit.startDriver();
         testunit.checkForDomScripts();
         System.out.println("HTML SCRIPTS");
         System.out.println("============");
@@ -75,7 +74,6 @@ public class ScriptFinderTest {
         for (String thisScript : testunit.getDomOnlyScripts()){
             System.out.println("* " + thisScript + " -- " + testunit.getHtmlTagFor(thisScript));
         }
-        testunit.stopDriver();
         // If you get here without any errors, you did a good thing.
         assertTrue(true);
     }
