@@ -96,7 +96,7 @@ public class ScriptFinderTest {
             System.out.println("* \"" + thisScript + "\" -- " + testunit.getHtmlTagFor(thisScript));
         }
         // If you get here without any errors, you did a good thing.
-        assertTrue(false); // going to autofail this so I can see the results
+        assertTrue(true);
     }
 
 }
