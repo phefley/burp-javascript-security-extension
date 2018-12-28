@@ -78,4 +78,25 @@ public class ScriptFinderTest {
         assertTrue(true);
     }
 
+    @Test public void runtimeTestBBB(){
+        String testUrl = "https://www.bedbathandbeyond.com/404-bbb.html";
+        ScriptFinder testunit = new ScriptFinder();
+        testunit.setUrl(testUrl);
+        testunit.retrieveHtml();
+        testunit.checkForDomScripts();
+        System.out.println("HTML SCRIPTS");
+        System.out.println("============");
+        for (String thisScript : testunit.getHtmlScripts()){
+            System.out.println("* \"" + thisScript + "\" -- " + testunit.getHtmlTagFor(thisScript));
+        }
+        System.out.println();
+        System.out.println("DOM SCRIPTS");
+        System.out.println("============");
+        for (String thisScript : testunit.getDomOnlyScripts()){
+            System.out.println("* \"" + thisScript + "\" -- " + testunit.getHtmlTagFor(thisScript));
+        }
+        // If you get here without any errors, you did a good thing.
+        assertTrue(false); // going to autofail this so I can see the results
+    }
+
 }

@@ -8,6 +8,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import java.util.concurrent.TimeUnit;
 
 // This is for JDK 11
@@ -96,13 +98,18 @@ public class ScriptFinder{
 
     public void checkForDomScripts(){
         startDriver();
-        driver.get(url);
+        try{
+            driver.get(url);
+        }
+        catch (TimeoutException e){
+            System.err.println("[" + url + "][-] - timeout when connecting.");
+        }
         List<WebElement> scripts = driver.findElements(By.xpath("//script"));
         for (WebElement scriptElement : scripts) {
-            if (!(scriptElement.getAttribute("src")=="")){
+            try {
                 String src = scriptElement.getAttribute("src");
-                String scriptTag = scriptElement.getAttribute("outerHTML");
-                if (src != null) {
+                if (!((src == null) || (src.isEmpty()))){
+                    String scriptTag = scriptElement.getAttribute("outerHTML");
                     if (!domScripts.contains(src)){
                         domScripts.add(src);
                     }
@@ -110,6 +117,9 @@ public class ScriptFinder{
                         domScriptData.put(src, new JavascriptResource(src, scriptTag));
                     }
                 }
+            }
+            catch (StaleElementReferenceException e){
+                System.err.println("[" + url + "][-] - Error attempting to access a script tag on this item which is no longer in the driver DOM.");
             }
         }
         stopDriver();
