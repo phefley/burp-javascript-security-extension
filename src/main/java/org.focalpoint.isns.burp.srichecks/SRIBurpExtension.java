@@ -78,7 +78,7 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
                     "Content Security Policy does not Require Subresource Integrity",
                     "The content security policy provided in the response headers does not require subresource integrity for script elements. Content security policies may do so by returning the following header:<br/><pre>Content-Security-Policy: require-sri-for script;</pre>",
                     "Low",
-                    "TODO - Issue background"
+                    "<p>When a script is served from a third-party source such as a public Content Delivery Network (CDN) location, the 'integrity' attribute of the 'script' tag should be used to confirm that the script can be trusted (i.e., it has not been modified from a version known to include only intended functionality and not be malicious). This attribute instructs the browser to load the third-party script, generate a hash of the file, and validate that its hash matches the hash of the exact version of the script known to be trusted before it can be executed. If the hash of the script loaded from the third-party source does not match the hash of the trusted version, most modern browsers will block the script's execution.</p><p>In order to enforce the use of subresource integrity for all scripts used across a site, the 'require-sri-for script' Content-Security-Policy directive should be used to instruct the browser to validate that the 'integrity' attribute is in place for all script elements.</p>"
                 )
             );
         }
@@ -101,7 +101,7 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
                     "Cross-Domain Script Includes (DOM)",
                     "The following cross-domain JavaScript resources were loaded in to the DOM but were not present in the initial page: <br/><ul>" + scriptString + "</ul>",
                     "Medium",
-                    "TODO - Issue background"
+                    "<p>When an application includes a script from an external domain, this script is executed by the browser within the security context of the invoking application. The script can therefore do anything that the application's own scripts can do, such as loading additional third-party scripts into DOM, accessing application data, and performing actions within the context of the current user.</p><p>If you include a script from an external domain, then you are trusting that domain with the data and functionality of your application, and you are trusting the domain's own security to prevent an attacker from modifying the script to perform malicious actions within your application.</p>"
                 )
             );
         }
@@ -135,7 +135,7 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
                         "JavaScript Element Missing Subresource Integrity Attribute",
                         "The following script references were present within the HTML or the DOM after loading and do not leverage an 'integrity' attribute to establish subresource integrity: <br/><ul><li>" + scriptUrl + "</li></ul>",
                         "Low",
-                        "TODO - Issue background"
+                        "<p>When a script is served from a third-party source such as a public Content Delivery Network (CDN) location, the 'integrity' attribute of the 'script' tag should be used to confirm that the script can be trusted (i.e., it has not been modified from a version known to include only intended functionality and not be malicious). This attribute instructs the browser to load the third-party script, generate a hash of the file, and validate that its hash matches the hash of the exact version of the script known to be trusted before it can be executed. If the hash of the script loaded from the third-party source does not match the hash of the trusted version, most modern browsers will block the script's execution.</p><p>In order to enforce the use of subresource integrity for all scripts used across a site, the 'require-sri-for script' Content-Security-Policy directive should be used to instruct the browser to validate that the 'integrity' attribute is in place for all script elements.</p>"
                     )
                 );
             }
@@ -155,7 +155,7 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
                             "JavaScript Subresource Integrity Failure",
                             "The following script references utilize subresource integrity, however the hash provided in the integrity attribute does not match the hash of the JavaScript obtained from the URL: <br/><ul><li>" + scriptUrl + "</li></ul>",
                             "High",
-                            "TODO - Issue background"
+                            "<p>When a script is served from a third-party source such as a public Content Delivery Network (CDN) location, the 'integrity' attribute of the 'script' tag should be used to confirm that the script can be trusted (i.e., it has not been modified from a version known to include only intended functionality and not be malicious). This attribute instructs the browser to load the third-party script, generate a hash of the file, and validate that its hash matches the hash of the exact version of the script known to be trusted before it can be executed. If the hash of the script loaded from the third-party source does not match the hash of the trusted version, most modern browsers will block the script's execution.</p><p>In order to enforce the use of subresource integrity for all scripts used across a site, the 'require-sri-for script' Content-Security-Policy directive should be used to instruct the browser to validate that the 'integrity' attribute is in place for all script elements.</p>"
                         )
                     );
                 }
@@ -182,7 +182,7 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
                         "Possibly Compromised JavaScript (Hash IoC)",
                         "The JavaScript at " + scriptUrl + " is a known, compromised resource based on the following threat intelligence source:<ul><li>" + iocChecker.getHashesSource(scriptObject.getHashes()) + "</li></ul>",
                         "High",
-                        "TODO - Issue background"
+                        "<p>When a script is served from a third-party source such as a public Content Delivery Network (CDN) location, the 'integrity' attribute of the 'script' tag should be used to confirm that the script can be trusted (i.e., it has not been modified from a version known to include only intended functionality and not be malicious). This attribute instructs the browser to load the third-party script, generate a hash of the file, and validate that its hash matches the hash of the exact version of the script known to be trusted before it can be executed. If the hash of the script loaded from the third-party source does not match the hash of the trusted version, most modern browsers will block the script's execution.</p><p>In order to enforce the use of subresource integrity for all scripts used across a site, the 'require-sri-for script' Content-Security-Policy directive should be used to instruct the browser to validate that the 'integrity' attribute is in place for all script elements.</p>"
                     )
                 );
             }
@@ -198,7 +198,7 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
                         "Possibly Compromised JavaScript (URL IoC)",
                         "The JavaScript at " + scriptUrl + " is a known, compromised resource based on the following threat intelligence source:<ul><li>" + iocChecker.getUrlSource(scriptUrl) + "</li></ul>",
                         "High",
-                        "TODO - Issue background"
+                        "<p>When a script is served from a third-party source such as a public Content Delivery Network (CDN) location, the 'integrity' attribute of the 'script' tag should be used to confirm that the script can be trusted (i.e., it has not been modified from a version known to include only intended functionality and not be malicious). This attribute instructs the browser to load the third-party script, generate a hash of the file, and validate that its hash matches the hash of the exact version of the script known to be trusted before it can be executed. If the hash of the script loaded from the third-party source does not match the hash of the trusted version, most modern browsers will block the script's execution.</p><p>In order to enforce the use of subresource integrity for all scripts used across a site, the 'require-sri-for script' Content-Security-Policy directive should be used to instruct the browser to validate that the 'integrity' attribute is in place for all script elements.</p>"
                     )
                 );
             }
