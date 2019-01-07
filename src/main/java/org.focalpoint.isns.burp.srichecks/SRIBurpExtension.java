@@ -8,6 +8,8 @@ import burp.IScanIssue;
 import burp.IHttpRequestResponse;
 import burp.IHttpService;
 import burp.IScannerInsertionPoint;
+import burp.ITab;
+import java.awt.Component;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,13 +21,18 @@ import java.util.regex.Pattern;
 import org.focalpoint.isns.burp.srichecks.ScriptFinder;
 import org.focalpoint.isns.burp.srichecks.IoCChecker;
 import org.focalpoint.isns.burp.srichecks.JavascriptResource;
+import org.focalpoint.isns.burp.srichecks.PluginConfigurationTab;
 
-public class SRIBurpExtension implements IBurpExtender, IScannerCheck
+import javax.swing.SwingUtilities;
+
+public class SRIBurpExtension implements IBurpExtender, IScannerCheck, ITab
 {
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
     private IoCChecker iocChecker = new IoCChecker();
     private Integer scanNumber = 0;
+
+    private PluginConfigurationTab panel;
 
     //
     // implement IBurpExtender
@@ -45,8 +52,32 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
         
         // register ourselves as a custom scanner check
         callbacks.registerScannerCheck(this);
+
+        // Create teh config tab
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // main panel
+                panel = PluginConfigurationTab.getInstance();
+                panel.render();
+                callbacks.customizeUiComponent(panel);
+
+                // add the custom tab to Burp's UI
+                callbacks.addSuiteTab(SRIBurpExtension.this);
+            }
+        });
     }
-    
+
+	@Override
+	public String getTabCaption() {
+		return "Focal Point SRI";
+	}
+
+	@Override
+	public Component getUiComponent() {
+		return panel;
+	}
+
     // helper method to search a response for occurrences of a literal match string
     // and return a list of start/end offsets
     private List<int[]> getMatches(byte[] response, byte[] match)
