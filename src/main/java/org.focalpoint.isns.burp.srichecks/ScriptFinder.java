@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ScriptFinder{
-    private final Integer PAGE_WAIT_TIMEOUT = 10; // seconds
+    private final Integer PAGE_WAIT_TIMEOUT = 10; // seconds - TODO - make this configurable
     private String url="NONE";
     private String html;
     private List<String> domScripts = new ArrayList<>();

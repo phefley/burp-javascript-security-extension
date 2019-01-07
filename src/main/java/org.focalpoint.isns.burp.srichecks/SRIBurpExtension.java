@@ -25,6 +25,7 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
     private IoCChecker iocChecker = new IoCChecker();
+    private Integer scanNumber = 0;
 
     //
     // implement IBurpExtender
@@ -207,6 +208,10 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
         return issues;
     }
 
+    private void log(String urlString, String logString){
+        System.out.println("[FOPO-SRI][" + scanNumber + "] " + urlString + " - " + logString);
+    }
+
     //
     // implement IScannerCheck
     //
@@ -214,6 +219,7 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
     @Override
     public List<IScanIssue> doPassiveScan(IHttpRequestResponse baseRequestResponse)
     {
+        scanNumber += 1;
         // Create the issues array
         List<IScanIssue> issues = new ArrayList<>();
         // Create a script finder for this instance
@@ -224,17 +230,17 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
         String response = helpers.bytesToString(baseRequestResponse.getResponse());
         String html = "";
         
-        System.out.println("[" + url + "] starting passive checks.");
+        log(url, "starting passive checks.");
 
         if (url.endsWith(".js")){
             // This is a JavaScript resource and I don't need to check it
-            System.out.println("[" + url + "] - finished passive checks - not checking a JS file.");
+            log(url,"finished passive checks - not checking a JS file.");
             return issues;
         }
 
         if (!response.contains("<script")){
             // This has no script resource and I don't need to check it
-            System.out.println("[" + url + "] - finished passive checks - not checking a resource with no script tags.");
+            log(url,"finished passive checks - not checking a resource with no script tags.");
             return issues;
         }
 
@@ -245,7 +251,7 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
         if (matcher.find()){
             html = matcher.group(0);
             scriptFinder.setHtml(html);
-            System.out.println("[" + url + "] - loading DOM in passive check.");
+            log(url,"loading DOM in passive check.");
             scriptFinder.checkForDomScripts();
             // Perform checks which require the DOM
             issues.addAll(checkForCrossDomainScriptIncludesDom(baseRequestResponse, scriptFinder));
@@ -255,13 +261,13 @@ public class SRIBurpExtension implements IBurpExtender, IScannerCheck
         }
 
         // Now we can check the scripts
-	    System.out.println("[" + url + "] - checking for SRI CSP requirements.");
+	    log(url,"checking for SRI CSP requirements.");
         issues.addAll(checkCspForSriRequirements(baseRequestResponse));
-	    System.out.println("[" + url + "] - checking for SRI issues.");
+	    log(url,"checking for SRI issues.");
         issues.addAll(checkForSriIssues(baseRequestResponse, scriptFinder));
-	    System.out.println("[" + url + "] - checking JavaScript resources against threat intel.");
+	    log(url,"checking JavaScript resources against threat intel.");
         issues.addAll(checkJavaScriptThreatIntel(baseRequestResponse, scriptFinder));
-	    System.out.println("[" + url + "] - checks complete!");
+	    log(url,"checks complete!");
 
         if (issues.size() > 0){
             return issues;
