@@ -36,9 +36,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ScriptFinder{
-    private final Integer PAGE_WAIT_TIMEOUT = 10; // seconds - TODO - make this configurable
+    private Integer PAGE_WAIT_TIMEOUT = 10;
     private String url="NONE";
     private String html;
+    private String driverPath = "";
     private List<String> domScripts = new ArrayList<>();
     private List<String> htmlScripts = new ArrayList<>();
     // Something to store a parsed URL
@@ -63,6 +64,22 @@ public class ScriptFinder{
         return url;
     }
 
+    public void setTimeout(Integer timeoutInSeconds){
+        PAGE_WAIT_TIMEOUT = timeoutInSeconds;
+    }
+
+    public Integer getTimeout(){
+        return PAGE_WAIT_TIMEOUT;
+    }
+
+    public void setDriverPath(String driverPathStr){
+        driverPath = driverPathStr;
+    }
+
+    public String getDriverPath(){
+        return driverPath;
+    }
+
     public void retrieveHtml(){
         if (!url.equals("NONE")){
             // TODO - download the HTML via the burp extender HTTP interface
@@ -82,18 +99,22 @@ public class ScriptFinder{
     }
 
     public void startDriver(){
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        HashMap<String, Object> prefs = new HashMap<String, Object>(); 
-        prefs.put("profile.managed_default_content_settings.images", 2);
-        options.setExperimentalOption("prefs", prefs); 
-        // TODO - find some way to change this for other people
-        //System.setProperty("webdriver.chrome.driver", "/Users/zarak/Downloads/chromedriver"); // set the path for the chromedriver binary
-	    System.setProperty("webdriver.chrome.driver", "/usr/lib/chromium-browser/chromedriver");
-        driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(PAGE_WAIT_TIMEOUT, TimeUnit.SECONDS); // Wait for the page to be completely loaded. Or reasonably loaded.
+        if (!driverPath.isEmpty()){
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--headless");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            HashMap<String, Object> prefs = new HashMap<String, Object>(); 
+            prefs.put("profile.managed_default_content_settings.images", 2);
+            options.setExperimentalOption("prefs", prefs); 
+            // Remember that the default is "/usr/lib/chromium-browser/chromedriver"
+            System.setProperty("webdriver.chrome.driver", driverPath);
+            driver = new ChromeDriver(options);
+            driver.manage().timeouts().implicitlyWait(PAGE_WAIT_TIMEOUT, TimeUnit.SECONDS); // Wait for the page to be completely loaded. Or reasonably loaded.
+        }
+        else {
+            System.err.println("You must set a driver path before you can start a driver.");
+        }
     }
 
     public void checkForDomScripts(){
