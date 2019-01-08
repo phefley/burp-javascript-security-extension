@@ -15,6 +15,11 @@ It does this by looking at the HTML received and loads the DOM via a headless Ch
    ```sudo apt install chromium-chromedriver```
 3. In burp, go to the extender tab, extensions sub-tab, and Add this extension. It is a Java extension type and you will need to select the org-focalpoint-isns-burp-srichecks.jar file.
 
+## Configuration
+A "Focal Point SRI" tab will appear in your burp session which allows you to configure two things:
+- The path to the chromedriver binary you want to use. This defaults to the standard location it is installed to in Linux.
+- The delay before evaluating the DOM (in seconds). As all of the JavaScript is gathered and run, the DOM may change over time. For advanced pages or slow connections, you might want to bump this up, but passive scans will take longer. The default, which I've had luck with, is 10 seconds.
+
 ## Execution
 When you run passive checks, the checks installed will run. Any output or errors will appear on the Extender/Extensions tab under "Focal Point - Custom Scanner Checks".
 
