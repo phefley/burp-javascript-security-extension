@@ -240,6 +240,31 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
         return issues;
     }
 
+    // Check for invalid JS links
+    public List<IScanIssue> checkJavaScriptLinks(IHttpRequestResponse baseRequestResponse, ScriptFinder finder){
+        List<IScanIssue> issues = new ArrayList<>();
+        for (String scriptUrl : finder.getCrossDomainScripts()){
+            JavascriptResource scriptObject = finder.getScriptObjectFor(scriptUrl);
+            // Check for missing data on object
+            if (!scriptObject.hasValidHostname()){
+                // This JS resource had no DNS which could be resolved
+                List<int[]> matches = getMatches(baseRequestResponse.getResponse(), finder.getHtmlTagFor(scriptUrl).getBytes());
+                issues.add(
+                    new CustomScanIssue(
+                        baseRequestResponse.getHttpService(),
+                        helpers.analyzeRequest(baseRequestResponse).getUrl(), 
+                        new IHttpRequestResponse[] { callbacks.applyMarkers(baseRequestResponse, null, matches) }, 
+                        "Invalid Hostname for External JavaScript Resource",
+                        "<p>The JavaScript at " + scriptUrl + " was not accessible during evaluation, as the hostname in the URL could not be resolved via DNS. This item should be evaluated for the potential of resource takeover.</p>",
+                        "Low",
+                        "<p>When a script is served from a third-party source and the hostname for the source does not resolve, it may be possible for an attacker to register the domain and host malicious JavaScript at the indicated URL.</p>"
+                    )
+                );
+            }
+        }
+        return issues;
+    }
+
     private void log(Integer currentScanNumber, String urlString, String logString){
         System.out.println("[FOPO-SRI][" + currentScanNumber + "] " + urlString + " - " + logString);
     }
@@ -257,6 +282,7 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
         List<IScanIssue> issues = new ArrayList<>();
         // Create a script finder for this instance
         ScriptFinder scriptFinder = new ScriptFinder();
+        scriptFinder.setCallbacks(callbacks);
         scriptFinder.setTimeout(panel.getDelay());
         scriptFinder.setDriverPath(panel.getDriverPath());
         // Find the URL
@@ -296,6 +322,8 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
         }
 
         // Now we can check the scripts
+        log(currentScanNumber, url,"checking for JS files which could be hijacked.");
+        issues.addAll(checkJavaScriptLinks(baseRequestResponse, scriptFinder));
 	    log(currentScanNumber, url,"checking for SRI CSP requirements.");
         issues.addAll(checkCspForSriRequirements(baseRequestResponse));
 	    log(currentScanNumber, url,"checking for SRI issues.");

@@ -1,6 +1,9 @@
 package org.focalpoint.isns.burp.srichecks;
 
 import org.focalpoint.isns.burp.srichecks.JavascriptResource;
+
+import burp.IBurpExtenderCallbacks;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -11,14 +14,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import java.util.concurrent.TimeUnit;
-
-// This is for JDK 11
-/*
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
-*/
 
 import jdk.incubator.http.HttpClient;
 import jdk.incubator.http.HttpRequest;
@@ -36,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ScriptFinder{
+    private IBurpExtenderCallbacks myCallbacks;
     private Integer PAGE_WAIT_TIMEOUT = 10;
     private String url="NONE";
     private String html;
@@ -49,6 +45,10 @@ public class ScriptFinder{
     // A dictionary of dom and html script data, respectively
     private HashMap<String,JavascriptResource> domScriptData = new HashMap<String,JavascriptResource>();
     private HashMap<String,JavascriptResource> htmlScriptData = new HashMap<String,JavascriptResource>();
+
+    public void setCallbacks(IBurpExtenderCallbacks callbacks){
+        myCallbacks = callbacks;
+    }
 
     public void setUrl(String urlString){
         url = urlString;
@@ -80,10 +80,9 @@ public class ScriptFinder{
         return driverPath;
     }
 
+    // There is no reason that this should ever be called within burp. Maybe think about getting rid of it and moving it to a test?
     public void retrieveHtml(){
         if (!url.equals("NONE")){
-            // TODO - download the HTML via the burp extender HTTP interface
-            // TODO - what about proxies? You may need to account for proxies if not using the burp HTTP library
             HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -135,7 +134,7 @@ public class ScriptFinder{
                         domScripts.add(src);
                     }
                     if (!domScriptData.containsKey(src)){
-                        domScriptData.put(src, new JavascriptResource(src, scriptTag));
+                        domScriptData.put(src, new JavascriptResource(myCallbacks, src, scriptTag));
                     }
                 }
             }
@@ -209,7 +208,7 @@ public class ScriptFinder{
         while (matcher.find()) {
             String scriptSrc = conditionReceivedUrl(matcher.group(1), url);
             String scriptTag = matcher.group(0);
-            JavascriptResource scriptObject = new JavascriptResource(scriptSrc, scriptTag);
+            JavascriptResource scriptObject = new JavascriptResource(myCallbacks, scriptSrc, scriptTag);
             htmlScriptData.put(scriptSrc, scriptObject);
             htmlScripts.add(scriptSrc);
         }

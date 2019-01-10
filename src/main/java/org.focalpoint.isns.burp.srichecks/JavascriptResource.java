@@ -6,16 +6,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-// The following is for JDK 11
-// import java.net.http.HttpClient;
-// import java.net.http.HttpRequest;
-// import java.net.http.HttpResponse;
-// import java.net.http.HttpResponse.BodyHandlers;
-import jdk.incubator.http.HttpClient;
-import jdk.incubator.http.HttpRequest;
-import jdk.incubator.http.HttpResponse;
-import jdk.incubator.http.HttpResponse.BodyHandler;
+import org.focalpoint.isns.burp.srichecks.Requester;
 
+import burp.IBurpExtenderCallbacks;
 
 import java.net.URI;
 import java.security.MessageDigest;
@@ -23,20 +16,28 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+// For DNS checks
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class JavascriptResource {
     private String src;
     private String originalTag;
     private Element parsedTag;
     private String data = "";
+    private Boolean dnsValid = false;
+    public static final String NO_DATA_RECEIVED = "NO DATA NO DATA NO DATA";
     private HashMap<String,String> hashes = new HashMap<String,String>();
 
     public JavascriptResource(){
         
     }
 
-    public JavascriptResource(String srcString, String tagString){
+    public JavascriptResource(IBurpExtenderCallbacks callbacks, String srcString, String tagString){
         setSrc(srcString);
         setOriginalTag(tagString);
+        getResource(callbacks);
+        calculateHashes();
     }
 
     public void setSrc(String newSrc){
@@ -65,22 +66,38 @@ public class JavascriptResource {
         return parsedTag;
     }
 
-    public void getResource(){
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(src))
-            .build();
+    public void getResource(IBurpExtenderCallbacks callbacks){
+        URI thisUri = URI.create(src);
+        // Let's see if the DNS for the resource resolves
+        InetAddress inetAddress;
         try {
-            HttpResponse<String> response = client.send(request, BodyHandler.asString());
-            data = response.body();
+            inetAddress = InetAddress.getByName(thisUri.getHost());
+            dnsValid = true;
         }
-        catch (Exception ex) {
-            System.err.println("[-] There was an issue getting the JavaScript file at " + src);
+        catch (UnknownHostException exception){
+            dnsValid = false;
+            data = NO_DATA_RECEIVED;
+            System.err.println("[FOPO-SRI][-] DNS did not resolve for the JavaScript resource at " + src);
+        }
+
+        if (dnsValid){
+            try {
+                Requester myRequester = new Requester(callbacks, src);
+                data = myRequester.getResponseBody();
+            }
+            catch (Exception ex) {
+                data = NO_DATA_RECEIVED;
+                System.err.println("[FOPO-SRI][-] There was an issue getting the JavaScript file at " + src);
+            }
         }
     }
 
     public boolean hasData(){
-        return (!data.equals(""));
+        return (!data.equals(NO_DATA_RECEIVED));
+    }
+
+    public boolean hasValidHostname(){
+        return dnsValid;
     }
 
     private String dataHasher(String algorithm) {
