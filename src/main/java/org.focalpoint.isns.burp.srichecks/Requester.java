@@ -20,6 +20,7 @@ public class Requester {
     private IBurpExtenderCallbacks myCallbacks;
     private short statusCode = 0;
     private String responseBody = "";
+    public static final String NO_DATA_RECEIVED = "NO DATA NO DATA NO DATA";
 
     public Requester(IBurpExtenderCallbacks callbacks, String url){
         setCallbacks(callbacks);
@@ -71,7 +72,7 @@ public class Requester {
             responseBody = myHelpers.bytesToString(responseBodyBytes);
         }
         else {
-            responseBody = null;
+            responseBody = NO_DATA_RECEIVED;
         }
     }
 
