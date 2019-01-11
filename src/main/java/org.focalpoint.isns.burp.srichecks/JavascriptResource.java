@@ -113,9 +113,13 @@ public class JavascriptResource {
     }
 
     public void calculateHashes(){
-        hashes.put("sha256",dataHasher("SHA-256"));
-        hashes.put("sha384",dataHasher("SHA-384"));
-        hashes.put("sha512",dataHasher("SHA-512"));
+        if (hasData()){
+            hashes.put("sha256",dataHasher("SHA-256"));
+            hashes.put("sha384",dataHasher("SHA-384"));
+            hashes.put("sha512",dataHasher("SHA-512"));
+            hashes.put("md5",dataHasher("MD5"));
+            hashes.put("sha1",dataHasher("SHA-1"));
+        }
     }
 
     public HashMap<String,String> getHashes(){

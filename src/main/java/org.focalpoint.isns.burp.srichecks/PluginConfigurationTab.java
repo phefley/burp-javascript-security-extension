@@ -28,8 +28,16 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 	private JTextField filePathField;
 	private Label titleLabel;
 	private JButton openChooserButton;
+
+	private Label iocLabel;
+	private JTextField iocCountField;
+	private JButton openIocFileButton;
+	private JFileChooser iocChooser;
+	
 	private final static Integer MAX_FILE_FIELD_COLS = 60;
 	private final static Integer MAX_DELAY_COLS = 3;
+	private final static Integer MAX_IOC_FIELD_COLS = 3;
+	private IoCChecker myIocChecker;
 	
 	public PluginConfigurationTab() {
 		//render();
@@ -41,6 +49,10 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 		return panel;
 	}
 	
+	public void setIocChecker(IoCChecker iocs){
+		myIocChecker = iocs;
+	}
+
 	public void render() {
 		SpringLayout layout = new SpringLayout();
 		setLayout(layout);
@@ -50,6 +62,7 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 		layout.putConstraint(SpringLayout.NORTH, titleLabel, 5, SpringLayout.NORTH, getInstance());
 		layout.putConstraint(SpringLayout.WEST, titleLabel, 5, SpringLayout.WEST, getInstance());
 
+		// Driver chooser wiring
 		driverChooser = new JFileChooser();
 		// Try to set a default based on a standard. Linux install location
 		File defaultDriver = new File("/usr/lib/chromium-browser/chromedriver");
@@ -70,6 +83,7 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 		layout.putConstraint(SpringLayout.WEST, openChooserButton, 5, SpringLayout.WEST, getInstance());
 		layout.putConstraint(SpringLayout.NORTH, openChooserButton, 5, SpringLayout.SOUTH, driverChooserLabel);
 
+		// Delay wiring
 		delayLabel = new JLabel("Delay (in seconds) to wait for the DOM to load:");
 		layout.putConstraint(SpringLayout.WEST, delayLabel, 5, SpringLayout.WEST, getInstance());
 		layout.putConstraint(SpringLayout.NORTH, delayLabel, 20, SpringLayout.SOUTH, openChooserButton);
@@ -79,6 +93,22 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 		layout.putConstraint(SpringLayout.WEST, delayTextField, 5, SpringLayout.EAST, delayLabel);
 		layout.putConstraint(SpringLayout.NORTH, delayTextField, 20, SpringLayout.SOUTH, openChooserButton);
 
+		// IoC wiring
+		iocLabel = new Label("IoC Count: ");
+		layout.putConstraint(SpringLayout.WEST, iocLabel, 5, SpringLayout.WEST, getInstance());
+		layout.putConstraint(SpringLayout.NORTH, iocLabel, 20, SpringLayout.SOUTH, delayLabel);
+		iocCountField = new JTextField(myIocChecker.getIocCount().toString());
+		iocCountField.setColumns(MAX_IOC_FIELD_COLS);
+		iocCountField.setEditable(false);
+		layout.putConstraint(SpringLayout.WEST, iocCountField, 5, SpringLayout.EAST, iocLabel);
+		layout.putConstraint(SpringLayout.NORTH, iocCountField, 20, SpringLayout.SOUTH, delayLabel);
+		iocChooser = new JFileChooser();
+		openIocFileButton = new JButton("Import IoCs");
+		openIocFileButton.addActionListener(this);
+		layout.putConstraint(SpringLayout.WEST, openIocFileButton, 5, SpringLayout.EAST, iocCountField);
+		layout.putConstraint(SpringLayout.NORTH, openIocFileButton, 20, SpringLayout.SOUTH, delayLabel);
+
+
 		// add to Pane
 		add(titleLabel);
 		add(driverChooserLabel);
@@ -86,6 +116,9 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 		add(openChooserButton);
 		add(delayLabel);
 		add(delayTextField);
+		add(iocLabel);
+		add(iocCountField);
+		add(openIocFileButton);
 	}
 
 	public Integer getDelay() {
@@ -109,6 +142,17 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 			if (returnVal == JFileChooser.APPROVE_OPTION){
 				System.out.println("[FOPO-SRI][*] Selected " + getDriverPath() + " as the chrome-driver.");
 				filePathField.setText(getDriverPath());
+			}
+		}
+		// Handle the open IOC Button
+		if (e.getSource() == openIocFileButton){
+			int returnVal = iocChooser.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION){
+				String filePath = iocChooser.getSelectedFile().getAbsolutePath();
+				System.out.println("[FOPO-SRI][*] Selected " + filePath + " for IoC import.");
+				myIocChecker.importIocsFromJson(filePath);
+				iocCountField.setText(myIocChecker.getIocCount().toString());
+				System.out.println("[FOPO-SRI][*] Imported IoCs from " + filePath + ".");
 			}
 		}
     }

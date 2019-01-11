@@ -54,12 +54,13 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
         // register ourselves as a custom scanner check
         callbacks.registerScannerCheck(this);
 
-        // Create teh config tab
+        // Create the config tab
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 // main panel
                 panel = new PluginConfigurationTab();
+                panel.setIocChecker(iocChecker);
                 panel.render();
                 callbacks.customizeUiComponent(panel);
 

@@ -66,8 +66,13 @@ public class Requester {
         rr = myCallbacks.makeHttpRequest(burpHttpService, requestBytes);
         IResponseInfo responseObj = myHelpers.analyzeResponse(rr.getResponse());
         statusCode = responseObj.getStatusCode();
-        byte[] responseBodyBytes = Arrays.copyOfRange(rr.getResponse(), responseObj.getBodyOffset(), rr.getResponse().length);
-        responseBody = myHelpers.bytesToString(responseBodyBytes);
+        if (statusCode == 200){
+            byte[] responseBodyBytes = Arrays.copyOfRange(rr.getResponse(), responseObj.getBodyOffset(), rr.getResponse().length);
+            responseBody = myHelpers.bytesToString(responseBodyBytes);
+        }
+        else {
+            responseBody = null;
+        }
     }
 
     public short getStatusCode(){

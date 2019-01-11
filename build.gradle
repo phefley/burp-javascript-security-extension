@@ -44,6 +44,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin
     compile group: 'org.apache.maven.plugins', name: 'maven-compiler-plugin', version: '3.8.0'
 
+    // https://mvnrepository.com/artifact/org.apache.clerezza.ext/org.json.simple
+    compile group: 'org.apache.clerezza.ext', name: 'org.json.simple', version: '0.4'
 
     // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
     compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.14.0'
