@@ -32,6 +32,7 @@ public class JavascriptResourceTest {
         assertEquals(testUrl, parsedTag.attr("src"));
     }
 
+    /*
     @Test public void testGetResource() {
         JavascriptResource testunit = new JavascriptResource();
         String testUrl = "https://code.jquery.com/jquery-3.3.1.js";
@@ -59,5 +60,5 @@ public class JavascriptResourceTest {
         String originalTag = "<script src=\"https://code.jquery.com/jquery-3.3.1.js\" integrity=\"sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=\" crossorigin=\"anonymous\"></script>";
         testunit.setOriginalTag(originalTag);
         assertTrue(testunit.checkIntegrity());
-    }
+    } */
 }

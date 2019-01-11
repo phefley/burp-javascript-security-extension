@@ -356,12 +356,18 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
         // method determines how/whether Burp consolidates the multiple issues
         // to prevent duplication
         //
-        // Since the issue name is sufficient to identify our issues as different,
-        // if both issues have the same name, only report the existing issue
+        // Since the issue name and detail are sufficient to identify our issues as different,
+        // if both issues have the same name and detail, only report the existing issue
         // otherwise report both issues
-        if (existingIssue.getIssueName().equals(newIssue.getIssueName()))
+        boolean sameName = existingIssue.getIssueName().equals(newIssue.getIssueName());
+        boolean sameDetail = existingIssue.getIssueDetail().equals(newIssue.getIssueDetail());
+        if (sameName && sameDetail){
+            // same
             return -1;
-        else return 0;
+        } else {
+            // different
+            return 0;
+        }
     }
 }
 
