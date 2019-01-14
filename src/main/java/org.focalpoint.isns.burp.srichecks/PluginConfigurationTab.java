@@ -182,7 +182,7 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 		if (e.getSource() == openChooserButton){
 			int returnVal = driverChooser.showDialog(this, "Select Driver");
 			if (returnVal == JFileChooser.APPROVE_OPTION){
-				System.out.println("[FOPO-SRI][*] Selected " + getDriverPath() + " as the chrome-driver.");
+				System.out.println("[JS-SRI][*] Selected " + getDriverPath() + " as the chrome-driver.");
 				filePathField.setText(getDriverPath());
 			}
 		}
@@ -191,10 +191,10 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 			int returnVal = iocChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION){
 				String filePath = iocChooser.getSelectedFile().getAbsolutePath();
-				System.out.println("[FOPO-SRI][*] Selected " + filePath + " for IoC import.");
+				System.out.println("[JS-SRI][*] Selected " + filePath + " for IoC import.");
 				myIocChecker.importIocsFromJson(filePath);
 				iocCountField.setText(myIocChecker.getIocCount().toString());
-				System.out.println("[FOPO-SRI][*] Imported IoCs from " + filePath + ".");
+				System.out.println("[JS-SRI][*] Imported IoCs from " + filePath + ".");
 			}
 		}
     }

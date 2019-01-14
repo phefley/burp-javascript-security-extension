@@ -127,7 +127,7 @@ public class JavascriptResource {
         catch (UnknownHostException exception){
             dnsValid = false;
             data = NO_DATA_RECEIVED;
-            System.err.println("[FOPO-SRI][-] DNS did not resolve for the JavaScript resource at " + src);
+            System.err.println("[JS-SRI][-] DNS did not resolve for the JavaScript resource at " + src);
         }
 
         if (dnsValid){
@@ -137,7 +137,7 @@ public class JavascriptResource {
             }
             catch (Exception ex) {
                 data = NO_DATA_RECEIVED;
-                System.err.println("[FOPO-SRI][-] There was an issue getting the JavaScript file at " + src);
+                System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src);
             }
         }
     }

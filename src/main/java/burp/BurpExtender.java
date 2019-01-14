@@ -281,7 +281,7 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
     }
 
     private void log(Integer currentScanNumber, String urlString, String logString){
-        System.out.println("[FOPO-SRI][" + currentScanNumber + "] " + urlString + " - " + logString);
+        System.out.println("[JS-SRI][" + currentScanNumber + "] " + urlString + " - " + logString);
     }
 
     //

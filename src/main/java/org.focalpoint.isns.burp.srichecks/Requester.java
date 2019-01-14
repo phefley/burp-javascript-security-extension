@@ -60,7 +60,7 @@ public class Requester {
             makeService();
         }
         catch (MalformedURLException exception){
-            System.err.println("[FOPO-SRI][-] Could not parse URL " + url);
+            System.err.println("[JS-SRI][-] Could not parse URL " + url);
         }
     }
 

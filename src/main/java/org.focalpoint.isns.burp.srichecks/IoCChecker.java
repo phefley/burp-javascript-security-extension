@@ -156,13 +156,13 @@ public class IoCChecker {
                 addIoc(newIoc);
             }
         } catch (FileNotFoundException e) {
-            System.err.println("[FOPO-SRI][IOC-Import][-] File at " + fileName + " not found.");
+            System.err.println("[JS-SRI][IOC-Import][-] File at " + fileName + " not found.");
             e.printStackTrace();
         } catch (IOException e) {
-            System.err.println("[FOPO-SRI][IOC-Import][-] IO exception for file " + fileName + ".");
+            System.err.println("[JS-SRI][IOC-Import][-] IO exception for file " + fileName + ".");
             e.printStackTrace();
         } catch (ParseException e) {
-            System.err.println("[FOPO-SRI][IOC-Import][-] Parser exception for file " + fileName + ".");
+            System.err.println("[JS-SRI][IOC-Import][-] Parser exception for file " + fileName + ".");
             e.printStackTrace();
         }
     }
