@@ -175,6 +175,7 @@ public class JavascriptResource {
                 return "";
             }
         }
+        return "";
     }
 
     /**

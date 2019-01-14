@@ -14,6 +14,7 @@ plugins {
     id 'application'
 }
 
+version = '0.9'
 
 //
 compileJava {
@@ -62,7 +63,6 @@ dependencies {
 }
 
 // Define the main class for the application
-//mainClassName = 'org.focalpoint.isns.burp.srichecks.SRIBurpExtension'
 mainClassName = 'burp.BurpExtender'
 
 task fatJar(type: Jar) {
