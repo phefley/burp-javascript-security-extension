@@ -38,10 +38,7 @@ public class IoCChecker {
      * Constructor for IoCCheckers.
      */
     public IoCChecker(){
-        //addIoc(new JavaScriptIOC("Annex Cloud Investigation Report 8/3/18","http://cdn.socialannex.com/s13/s13_ac_mc.js"));
-        //addIoc(new JavaScriptIOC("Annex Cloud Investigation Report 8/3/18","http://cdn.socialannex.com/c/js/json3.js"));
-        //addIoc(new JavaScriptIOC("Annex Cloud Investigation Report 8/3/18","https://cdn.socialannex.com/s13/s13_ac_mc.js"));
-        //addIoc(new JavaScriptIOC("Annex Cloud Investigation Report 8/3/18","https://cdn.socialannex.com/c/js/json3.js"));
+        // add static IOCs here if you want
     }
 
     /**
