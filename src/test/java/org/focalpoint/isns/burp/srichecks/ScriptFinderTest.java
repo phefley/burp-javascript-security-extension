@@ -1,3 +1,18 @@
+/**
+ * BurpSuite JavaScript Security Extension
+ * Copyright (C) 2019  Peter Hefley
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General 
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the 
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
+ * more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program.  
+ * If not, see <https://www.gnu.org/licenses/>.
+ */
 package org.focalpoint.isns.burp.srichecks;
 
 import org.junit.Test;
@@ -77,28 +92,6 @@ public class ScriptFinderTest {
         System.out.println("============");
         for (String thisScript : testunit.getDomOnlyScripts()){
             System.out.println("* " + thisScript + " -- " + testunit.getHtmlTagFor(thisScript));
-        }
-        // If you get here without any errors, you did a good thing.
-        assertTrue(true);
-    }
-
-    @Test public void runtimeTestBBB(){
-        String testUrl = "https://www.bedbathandbeyond.com/404-bbb.html";
-        ScriptFinder testunit = new ScriptFinder();
-        testunit.setDriverPath("/usr/lib/chromium-browser/chromedriver");
-        testunit.setUrl(testUrl);
-        testunit.retrieveHtml();
-        testunit.checkForDomScripts();
-        System.out.println("HTML SCRIPTS");
-        System.out.println("============");
-        for (String thisScript : testunit.getHtmlScripts()){
-            System.out.println("* \"" + thisScript + "\" -- " + testunit.getHtmlTagFor(thisScript));
-        }
-        System.out.println();
-        System.out.println("DOM SCRIPTS");
-        System.out.println("============");
-        for (String thisScript : testunit.getDomOnlyScripts()){
-            System.out.println("* \"" + thisScript + "\" -- " + testunit.getHtmlTagFor(thisScript));
         }
         // If you get here without any errors, you did a good thing.
         assertTrue(true);

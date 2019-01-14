@@ -1,3 +1,18 @@
+/**
+ * BurpSuite JavaScript Security Extension
+ * Copyright (C) 2019  Peter Hefley
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General 
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the 
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
+ * more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program.  
+ * If not, see <https://www.gnu.org/licenses/>.
+ */
 package org.focalpoint.isns.burp.srichecks;
 
 import java.awt.Color;
@@ -39,20 +54,34 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 	private final static Integer MAX_IOC_FIELD_COLS = 3;
 	private IoCChecker myIocChecker;
 	
+	/**
+	 * Default constructor
+	 */
 	public PluginConfigurationTab() {
 		//render();
 	}
 	
+	/** 
+	 * Get this instance
+	 * @return this instance
+	 */
 	public static PluginConfigurationTab getInstance() {
 		if(panel == null)
 			panel = new PluginConfigurationTab();
 		return panel;
 	}
 	
+	/**
+	 * Set the IOC checker, linking the two so that the IOCs can be loaded
+	 * @param iocs An IOCChecker object used.
+	 */
 	public void setIocChecker(IoCChecker iocs){
 		myIocChecker = iocs;
 	}
 
+	/**
+	 * Render the view
+	 */
 	public void render() {
 		SpringLayout layout = new SpringLayout();
 		setLayout(layout);
@@ -121,6 +150,11 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 		add(openIocFileButton);
 	}
 
+	/**
+	 * Get the delay from the GUI as an integer
+	 * If there's not an integer which can be parsed, reset this to the default
+	 * @return the delay (in seconds, as an integer)
+	 */
 	public Integer getDelay() {
 		try {
 			return Integer.parseInt(delayTextField.getText());
@@ -131,10 +165,18 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 		}
 	}
 	
+	/**
+	 * Get the driver file path for the chromedriver which should be used by Seleniu, from the GUI
+	 * @return a String which is the path to the chromedriver binary picked by the user in the GUI
+	 */
 	public String getDriverPath() {
 		return driverChooser.getSelectedFile().getAbsolutePath();
     }
-    
+
+	/** 
+	 * Handle actions performed within the GUI
+	 * @param e an actionevent which occurred in the GUI
+	 */
     public void actionPerformed(ActionEvent e){
         // Handle the select button
 		if (e.getSource() == openChooserButton){

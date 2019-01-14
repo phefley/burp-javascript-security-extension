@@ -1,5 +1,19 @@
+/**
+ * BurpSuite JavaScript Security Extension
+ * Copyright (C) 2019  Peter Hefley
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General 
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the 
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
+ * more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program.  
+ * If not, see <https://www.gnu.org/licenses/>.
+ */
 package burp;
-
 
 import burp.IBurpExtender;
 import burp.IBurpExtenderCallbacks;
@@ -49,7 +63,7 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
         helpers = callbacks.getHelpers();
         
         // set our extension name
-        callbacks.setExtensionName("Focal Point Scan Checks -- SRI and JavaScript Threat Intel");
+        callbacks.setExtensionName("JavaScript Security -- SRI and Threat Intel");
         
         // register ourselves as a custom scanner check
         callbacks.registerScannerCheck(this);
@@ -72,7 +86,7 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
 
 	@Override
 	public String getTabCaption() {
-		return "Focal Point SRI";
+		return "JavaScript Security";
 	}
 
 	@Override
