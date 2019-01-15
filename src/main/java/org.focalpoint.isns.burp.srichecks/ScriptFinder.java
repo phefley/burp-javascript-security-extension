@@ -272,7 +272,7 @@ public class ScriptFinder{
         Document doc = Jsoup.parse(html);
         for (Element jsElement : doc.getElementsByTag("script")){
             if (jsElement.hasAttr("src")){
-                String scriptSrc = jsElement.attr("src");
+                String scriptSrc = conditionReceivedUrl(jsElement.attr("src"), url);
                 String scriptTag = jsElement.outerHtml();
                 JavascriptResource scriptObject = new JavascriptResource(myCallbacks, scriptSrc, scriptTag);
                 htmlScriptData.put(scriptSrc, scriptObject);
