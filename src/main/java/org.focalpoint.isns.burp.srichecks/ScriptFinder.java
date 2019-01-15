@@ -35,8 +35,9 @@ import jdk.incubator.http.HttpRequest;
 import jdk.incubator.http.HttpResponse;
 import jdk.incubator.http.HttpResponse.BodyHandler;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.util.List;
 import java.net.URL;
@@ -268,14 +269,15 @@ public class ScriptFinder{
      * Take the HTML this object has and find all of the scripts within it
      */
     private void getScriptsFromHtml(){
-        Pattern pattern = Pattern.compile("<\\s*script[^>]*src=\"(.*?)\"[^>]*>(.*?)<\\s*/\\s*script>");
-        Matcher matcher = pattern.matcher(html);
-        while (matcher.find()) {
-            String scriptSrc = conditionReceivedUrl(matcher.group(1), url);
-            String scriptTag = matcher.group(0);
-            JavascriptResource scriptObject = new JavascriptResource(myCallbacks, scriptSrc, scriptTag);
-            htmlScriptData.put(scriptSrc, scriptObject);
-            htmlScripts.add(scriptSrc);
+        Document doc = Jsoup.parse(html);
+        for (Element jsElement : doc.getElementsByTag("script")){
+            if (jsElement.hasAttr("src")){
+                String scriptSrc = jsElement.attr("src");
+                String scriptTag = jsElement.outerHtml();
+                JavascriptResource scriptObject = new JavascriptResource(myCallbacks, scriptSrc, scriptTag);
+                htmlScriptData.put(scriptSrc, scriptObject);
+                htmlScripts.add(scriptSrc);
+            }
         }
     }
 
