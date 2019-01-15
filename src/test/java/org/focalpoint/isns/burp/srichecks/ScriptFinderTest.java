@@ -93,11 +93,15 @@ public class ScriptFinderTest {
         for (String thisScript : testunit.getDomOnlyScripts()){
             System.out.println("* " + thisScript + " -- " + testunit.getHtmlTagFor(thisScript));
         }
+        System.out.println("\n\n");
         // If you get here without any errors, you did a good thing.
         assertTrue(true);
     }
 
     @Test public void runtimeTestFopo(){
+        final String KNOWN_HTML_SCRIPT = "https://js.hs-scripts.com/2762002.js";
+        final String KNOWN_DOM_SCRIPT = "https://js.hsleadflows.net/leadflows.js";
+
         List<String> sriScripts = new ArrayList<>();
         List<String> sriMissingScripts = new ArrayList<>();
         String testUrl = "https://focal-point.com";
@@ -122,27 +126,46 @@ public class ScriptFinderTest {
         System.out.println();
         System.out.println("HTML SCRIPTS");
         System.out.println("============");
-        for (String thisScript : testunit.getHtmlScripts()){
+        List<String> htmlScripts = testunit.getHtmlScripts();
+        for (String thisScript : htmlScripts){
             System.out.println("* \"" + thisScript + "\" -- " + testunit.getHtmlTagFor(thisScript));
         }
+        // Check for the known HTML script
+        assertTrue(htmlScripts.contains(KNOWN_HTML_SCRIPT));
+        // Check to make sure the DOM script isn't there
+        assertFalse(htmlScripts.contains(KNOWN_DOM_SCRIPT));
+
         System.out.println();
         System.out.println("DOM SCRIPTS");
         System.out.println("============");
-        for (String thisScript : testunit.getDomOnlyScripts()){
+        List<String> domScripts = testunit.getDomOnlyScripts();
+        for (String thisScript : domScripts){
             System.out.println("* \"" + thisScript + "\" -- " + testunit.getHtmlTagFor(thisScript));
         }
+        // Check for the known DOM script
+        assertTrue(domScripts.contains(KNOWN_DOM_SCRIPT));
+        // Check to make sure the HTML script isn't there
+        assertFalse(domScripts.contains(KNOWN_HTML_SCRIPT));
+
         System.out.println();
         System.out.println("SRI Scripts");
         System.out.println("===========");
         for (String thisScript : sriScripts){
             System.out.println("* \"" + thisScript + "\" -- " + testunit.getHtmlTagFor(thisScript));
         }
+        // There should not be any
+        assertEquals(0, sriScripts.size());
+
         System.out.println();
         System.out.println("SRI Missing Scripts");
         System.out.println("===================");
         for (String thisScript : sriMissingScripts){
             System.out.println("* \"" + thisScript + "\" -- " + testunit.getHtmlTagFor(thisScript));
         }
+        // Check for both known scripts in sriMissing
+        assertTrue(sriMissingScripts.contains(KNOWN_DOM_SCRIPT));
+        assertTrue(sriMissingScripts.contains(KNOWN_HTML_SCRIPT));
+
         // If you get here without any errors, you did a good thing.
         assertTrue(true);
     }
