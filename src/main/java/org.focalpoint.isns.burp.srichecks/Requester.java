@@ -18,23 +18,34 @@ package org.focalpoint.isns.burp.srichecks;
 import java.net.URL;
 import java.net.MalformedURLException;
 
+// For using the burp HTTP interface
 import burp.IHttpService;
 import burp.IExtensionHelpers;
 import burp.IBurpExtenderCallbacks;
 import burp.IHttpRequestResponse;
 import burp.IResponseInfo;
+
+// To use the incubated HTTP interface
+import jdk.incubator.http.HttpClient;
+import jdk.incubator.http.HttpRequest;
+import jdk.incubator.http.HttpResponse;
+import jdk.incubator.http.HttpResponse.BodyHandler;
+import java.net.URI;
+
+
 import java.util.Arrays;
 
 public class Requester {
-    private IHttpService burpHttpService;
+    private IHttpService burpHttpService = null;
     private String urlString;
     private URL urlObj;
     private IHttpRequestResponse rr;
-    private IExtensionHelpers myHelpers;
-    private IBurpExtenderCallbacks myCallbacks;
+    private IExtensionHelpers myHelpers = null;
+    private IBurpExtenderCallbacks myCallbacks = null;
     private short statusCode = 0;
     private String responseBody = "";
     public static final String NO_DATA_RECEIVED = "NO DATA NO DATA NO DATA";
+    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36";
 
     /**
      * Public constructor for Requester objects
@@ -70,7 +81,11 @@ public class Requester {
      */
     public void setCallbacks(IBurpExtenderCallbacks callbacks){
         myCallbacks = callbacks;
-        myHelpers = myCallbacks.getHelpers();
+        if (myCallbacks == null){
+            myHelpers = null;
+        } else {
+            myHelpers = myCallbacks.getHelpers();
+        }
     }
 
 
@@ -78,26 +93,39 @@ public class Requester {
      * Generate the HTTP service required to use the Burp HTTP interface
      */
     public void makeService(){
-        Boolean useHttps = (urlObj.getProtocol().equals("https"));
-        int port = 0;
-        if (urlObj.getPort() == -1){
-            if (urlObj.getProtocol().equals("https")){
-                port = 443;
+        if (!(myHelpers == null)){
+            Boolean useHttps = (urlObj.getProtocol().equals("https"));
+            int port = 0;
+            if (urlObj.getPort() == -1){
+                if (urlObj.getProtocol().equals("https")){
+                    port = 443;
+                }
+                if (urlObj.getProtocol().equals("http")){
+                    port = 80;
+                }
             }
-            if (urlObj.getProtocol().equals("http")){
-                port = 80;
+            else {
+                port = urlObj.getPort();
             }
+            burpHttpService = myHelpers.buildHttpService(urlObj.getHost(), port, useHttps);
         }
-        else {
-            port = urlObj.getPort();
-        }
-        burpHttpService = myHelpers.buildHttpService(urlObj.getHost(), port, useHttps);
     }
 
     /** 
      * Make the HTTP request this object is set up for
      */
     public void makeRequest(){
+        if (myCallbacks == null){
+            makeRequestWithoutBurp();
+        } else {
+            makeRequestWithBurp();
+        }
+    }
+
+    /**
+     * Make the HTTP request via burp
+     */
+    public void makeRequestWithBurp(){
         byte[] requestBytes = myHelpers.buildHttpRequest(urlObj);
         rr = myCallbacks.makeHttpRequest(burpHttpService, requestBytes);
         IResponseInfo responseObj = myHelpers.analyzeResponse(rr.getResponse());
@@ -108,6 +136,24 @@ public class Requester {
         }
         else {
             responseBody = NO_DATA_RECEIVED;
+        }
+    }
+
+    /**
+     * Make the HTTP request without using the burp callbacks interface
+     */
+    public void makeRequestWithoutBurp(){
+        HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(urlString))
+            .build();
+        try {
+            HttpResponse<String> response = client.send(request, BodyHandler.asString());
+            statusCode = (short) response.statusCode();
+            responseBody = response.body();
+        }
+        catch (Exception ex) {
+            System.err.println("[-] There was an issue getting the JavaScript file at " + urlString);
         }
     }
 

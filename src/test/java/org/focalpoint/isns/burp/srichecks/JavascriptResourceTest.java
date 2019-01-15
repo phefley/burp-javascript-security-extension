@@ -17,6 +17,9 @@ package org.focalpoint.isns.burp.srichecks;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import java.util.HashMap;
+
 import org.jsoup.nodes.Element;
 
 public class JavascriptResourceTest {
@@ -47,11 +50,12 @@ public class JavascriptResourceTest {
         assertEquals(testUrl, parsedTag.attr("src"));
     }
 
-    /*
+
     @Test public void testGetResource() {
         JavascriptResource testunit = new JavascriptResource();
         String testUrl = "https://code.jquery.com/jquery-3.3.1.js";
         testunit.setSrc(testUrl);
+        testunit.setCallbacks(null);
         testunit.getResource();
         assertTrue(testunit.hasData());;
     }
@@ -60,6 +64,7 @@ public class JavascriptResourceTest {
         JavascriptResource testunit = new JavascriptResource();
         String testUrl = "https://code.jquery.com/jquery-3.3.1.js";
         testunit.setSrc(testUrl);
+        testunit.setCallbacks(null);
         testunit.getResource();
         testunit.calculateHashes();
         String integrityValue = "sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="; // obtained from the jquery website
@@ -67,13 +72,17 @@ public class JavascriptResourceTest {
     }
 
     @Test public void testIntegrity() {
-        JavascriptResource testunit = new JavascriptResource();
-        String testUrl = "https://code.jquery.com/jquery-3.3.1.js";
-        testunit.setSrc(testUrl);
-        testunit.getResource();
-        testunit.calculateHashes();
-        String originalTag = "<script src=\"https://code.jquery.com/jquery-3.3.1.js\" integrity=\"sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=\" crossorigin=\"anonymous\"></script>";
-        testunit.setOriginalTag(originalTag);
+        String testUrl = "https://code.jquery.com/jquery-3.3.1.min.js";
+        String originalTag = "<script src=\"https://code.jquery.com/jquery-3.3.1.min.js\" integrity=\"sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=\" crossorigin=\"anonymous\"></script>";
+        JavascriptResource testunit = new JavascriptResource(null, testUrl, originalTag);
+        System.out.println("Integrity Testing");
+        System.out.println("-----------------");
+        System.out.println("Original tag: " + originalTag);
+        System.out.println("Hashes:");
+        HashMap<String,String> hashes = testunit.getHashes();
+        for (String hashAlgo : hashes.keySet()){
+            System.out.println("\t" + hashAlgo + " : " + hashes.get(hashAlgo));
+        }
         assertTrue(testunit.checkIntegrity());
-    } */
+    }
 }

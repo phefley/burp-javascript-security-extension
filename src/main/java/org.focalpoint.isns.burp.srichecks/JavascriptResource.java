@@ -41,6 +41,7 @@ public class JavascriptResource {
     private Element parsedTag;
     private String data = "";
     private Boolean dnsValid = false;
+    private IBurpExtenderCallbacks callbacks = null;
     public static final String NO_DATA_RECEIVED = "NO DATA NO DATA NO DATA";
     private HashMap<String,String> hashes = new HashMap<String,String>();
 
@@ -57,8 +58,9 @@ public class JavascriptResource {
      */
     public JavascriptResource(IBurpExtenderCallbacks callbacks, String srcString, String tagString){
         setSrc(srcString);
+        setCallbacks(callbacks);
         setOriginalTag(tagString);
-        getResource(callbacks);
+        getResource();
         calculateHashes();
     }
 
@@ -76,6 +78,22 @@ public class JavascriptResource {
      */
     public String getSrc(){
         return src;
+    }
+
+    /**
+     * Set the callbacks to use for this object
+     * @param cb IBurpExtenderCallbacks object to use for burp callbacks
+     */
+    public void setCallbacks(IBurpExtenderCallbacks cb){
+        callbacks = cb;
+    }
+
+    /**
+     * Get the callbacks used by this object
+     * @return IBurpExtenderCallbacks object used by this object for burp interface
+     */
+    public IBurpExtenderCallbacks getCallbacks(){
+        return callbacks;
     }
 
     /**
@@ -114,9 +132,8 @@ public class JavascriptResource {
 
     /**
      * Actually go and get the referenced JavaScript resource via HTTP through burp
-     * @param callbacks the burp suite callbacks object, needed to use the burp suite HTTP interface
      */
-    public void getResource(IBurpExtenderCallbacks callbacks){
+    public void getResource(){
         URI thisUri = URI.create(src);
         // Let's see if the DNS for the resource resolves
         InetAddress inetAddress;
@@ -132,6 +149,10 @@ public class JavascriptResource {
 
         if (dnsValid){
             try {
+                /* 
+                * There is a chance at this point that callbacks is null, that's okay
+                * that is the way it should be for testing without going through burp
+                */
                 Requester myRequester = new Requester(callbacks, src);
                 data = myRequester.getResponseBody();
             }
@@ -167,7 +188,8 @@ public class JavascriptResource {
         if (hasData()){
             try {
                 MessageDigest digest = MessageDigest.getInstance(algorithm);
-                byte[] encodedHash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
+                //byte[] encodedHash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
+                byte[] encodedHash = digest.digest(data.getBytes());
                 return Base64.getEncoder().encodeToString(encodedHash);
             }
             catch (NoSuchAlgorithmException ex) {
