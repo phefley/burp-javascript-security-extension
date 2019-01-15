@@ -122,6 +122,12 @@ public class ScriptFinderTest {
             }
         }
 
+        // Check cross domain scripts
+        assertTrue(testunit.getCrossDomainScripts().contains(KNOWN_DOM_SCRIPT));
+        assertTrue(testunit.getCrossDomainScripts().contains(KNOWN_HTML_SCRIPT));
+        assertTrue(testunit.getCrossDomainHtmlScripts().contains(KNOWN_HTML_SCRIPT));
+        assertTrue(testunit.getCrossDomainDomScripts().contains(KNOWN_DOM_SCRIPT));
+
         System.out.println(testUrl);
         System.out.println();
         System.out.println("HTML SCRIPTS");

@@ -335,7 +335,6 @@ public class ScriptFinder{
      * @return a List object of Strings which are URLs to JS resources referenced by the page's HTML
      */
     public List<String> getCrossDomainHtmlScripts(){
-        // TODO - Add a test
         return selectCrossDomainScripts(htmlScripts);
     }
 
@@ -344,7 +343,6 @@ public class ScriptFinder{
      * @return a List object of Strings which are URLs to cross-domain JS resources not referenced by the page's DOM
      */
     public List<String> getCrossDomainDomScripts(){
-        // TODO - Add a test
         return selectCrossDomainScripts(domScripts);
     }
 
@@ -353,7 +351,6 @@ public class ScriptFinder{
      * @return a List object of Strings which are URLs to JS resources in the HTML/DOM which are cross-domain
      */
     public List<String> getCrossDomainScripts(){
-        // TODO - Add a test
         return selectCrossDomainScripts(getScripts());
     }
 
@@ -362,7 +359,6 @@ public class ScriptFinder{
      * @return a List object of Strings which are URLs to JS resources not referenced by the page's HTML, but present in the DOM
      */
     public List<String> getDomOnlyScripts(){
-        // TODO - Add a test
         List<String> returnList = new ArrayList<>();
         for (String thisScript : domScripts){
             if (!htmlScripts.contains(thisScript)){
@@ -377,7 +373,6 @@ public class ScriptFinder{
      * @return a List object of Strings which are URLs to cross-domain JS resources not referenced by the page's HTML, but present in the DOM
      */
     public List<String> getDomOnlyCrossDomainScripts(){
-        // TODO - Add a test
         return selectCrossDomainScripts(getDomOnlyScripts());
     }
 
