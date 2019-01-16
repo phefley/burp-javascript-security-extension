@@ -1,7 +1,7 @@
 /**
  * BurpSuite JavaScript Security Extension
- * Copyright (C) 2019  Peter Hefley
- * 
+ * Copyright (C) 2019  Focal Point Data Risk, LLC
+ * Written by: Peter Hefley
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General 
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
