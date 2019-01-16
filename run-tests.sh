@@ -1,2 +1,2 @@
 #!/bin/bash
-./gradlew clean test
+./gradlew -b tests.gradle clean test

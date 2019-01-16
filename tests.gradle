@@ -16,7 +16,6 @@ plugins {
 
 version = '0.9'
 
-/*
 compileJava {
   options.compilerArgs += ["--add-modules", "jdk.incubator.httpclient"]
 }
@@ -31,10 +30,9 @@ test {
      events "passed", "skipped", "failed"
   }
 }
-*/
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '1.10'
+targetCompatibility = '1.10'
 
 repositories {
     // Use jcenter for resolving your dependencies.
