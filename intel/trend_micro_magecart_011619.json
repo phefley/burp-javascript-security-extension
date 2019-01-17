@@ -1,0 +1,26 @@
+[
+	{
+		"source" : "https://blog.trendmicro.com/trendlabs-security-intelligence/new-magecart-attack-delivered-through-compromised-advertising-supply-chain/",
+		"hashes" : {
+            "sha256" : "56cca56e39431187a2bd95e53eece8f11d3cbe2ea7ee692fa891875f40f233f5"
+        }
+    },
+	{
+		"source" : "https://blog.trendmicro.com/trendlabs-security-intelligence/new-magecart-attack-delivered-through-compromised-advertising-supply-chain/",
+		"hashes" : {
+            "sha256" : "f1f905558c1546cd6df67504462f0171f9fca1cfe8b0348940aad78265a5ef73"
+        }
+    },
+	{
+		"source" : "https://blog.trendmicro.com/trendlabs-security-intelligence/new-magecart-attack-delivered-through-compromised-advertising-supply-chain/",
+		"hashes" : {
+            "sha256" : "87ee0ae3abcd8b4880bf48781eba16135ba03392079a8d78a663274fde4060cd"
+        }
+    },
+	{
+		"source" : "https://blog.trendmicro.com/trendlabs-security-intelligence/new-magecart-attack-delivered-through-compromised-advertising-supply-chain/",
+		"hashes" : {
+            "sha256" : "80e40051baae72b37fee49ecc43e8dded645b1baf5ce6166c96a3bcf0c3582ce"
+        }
+    }
+]
