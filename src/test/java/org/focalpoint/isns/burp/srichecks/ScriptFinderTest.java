@@ -100,7 +100,7 @@ public class ScriptFinderTest {
 
     @Test public void runtimeTestFopo(){
         final String KNOWN_HTML_SCRIPT = "https://js.hs-scripts.com/2762002.js";
-        final String KNOWN_DOM_SCRIPT = "https://js.hsleadflows.net/leadflows.js";
+        final String KNOWN_DOM_SCRIPT = "https://www.youtube.com/iframe_api";
 
         List<String> sriScripts = new ArrayList<>();
         List<String> sriMissingScripts = new ArrayList<>();

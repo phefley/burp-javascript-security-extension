@@ -83,6 +83,8 @@ public class JavascriptResourceTest {
         for (String hashAlgo : hashes.keySet()){
             System.out.println("\t" + hashAlgo + " : " + hashes.get(hashAlgo));
         }
+        System.out.println();
+        System.out.println(testunit.getData());
         assertTrue(testunit.checkIntegrity());
     }
 }

@@ -31,9 +31,7 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-// For DNS checks
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import org.focalpoint.isns.burp.srichecks.Resolver;
 
 public class JavascriptResource {
     private String src;
@@ -136,16 +134,8 @@ public class JavascriptResource {
     public void getResource(){
         URI thisUri = URI.create(src);
         // Let's see if the DNS for the resource resolves
-        InetAddress inetAddress;
-        try {
-            inetAddress = InetAddress.getByName(thisUri.getHost());
-            dnsValid = true;
-        }
-        catch (UnknownHostException exception){
-            dnsValid = false;
-            data = NO_DATA_RECEIVED;
-            System.err.println("[JS-SRI][-] DNS did not resolve for the JavaScript resource at " + src);
-        }
+        Resolver myResolver = new Resolver();
+        dnsValid = myResolver.hasValidRecordsForAUrl(thisUri.getHost());
 
         if (dnsValid){
             try {
@@ -160,6 +150,9 @@ public class JavascriptResource {
                 data = NO_DATA_RECEIVED;
                 System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src);
             }
+        } else {
+            data = NO_DATA_RECEIVED;
+            System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src + ". DNS was not valid.");
         }
     }
 
@@ -169,6 +162,14 @@ public class JavascriptResource {
      */
     public boolean hasData(){
         return (!data.equals(NO_DATA_RECEIVED));
+    }
+
+    /**
+     * Get the data for this resource
+     * @return the string of the data
+     */
+    public String getData(){
+        return data;
     }
 
     /**
