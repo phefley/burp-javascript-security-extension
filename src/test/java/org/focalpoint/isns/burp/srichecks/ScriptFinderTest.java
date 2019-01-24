@@ -67,17 +67,19 @@ public class ScriptFinderTest {
 
     @Test public void testDownloadHtml(){
         ScriptFinder testunit = new ScriptFinder();
-        String testUrl = "https://www.focal-point.com";
+        String testUrl = "https://focal-point.com";
         testunit.setDriverPath("/usr/lib/chromium-browser/chromedriver");
         testunit.setUrl(testUrl);
         assertEquals(testUrl, testunit.getUrl());
         testunit.retrieveHtml();
+        System.out.println("Test Download HTML:");
+        System.out.println(testunit.getHtml());
         assertTrue(testunit.getHtml().contains("Focal Point"));
     }
 
     @Test public void testCheckForDomScripts(){
         ScriptFinder testunit = new ScriptFinder();
-        String testUrl = "https://www.focal-point.com";
+        String testUrl = "https://focal-point.com";
         testunit.setDriverPath("/usr/lib/chromium-browser/chromedriver");
         testunit.setUrl(testUrl);
         testunit.retrieveHtml();

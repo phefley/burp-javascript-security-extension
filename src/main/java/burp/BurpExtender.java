@@ -24,6 +24,7 @@ import burp.IHttpRequestResponse;
 import burp.IHttpService;
 import burp.IScannerInsertionPoint;
 import burp.ITab;
+import burp.IResponseInfo;
 import java.awt.Component;
 
 import java.net.URL;
@@ -307,6 +308,14 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
         String html = "";
         
         log(currentScanNumber, url, "starting passive checks.");
+
+        // Check the content type
+        IResponseInfo responseInfo = helpers.analyzeResponse(baseRequestResponse.getResponse());
+        if(!responseInfo.getStatedMimeType().toLowerCase().contains("html")){
+            // This doesn't look like HTML to me
+            log(currentScanNumber, url,"finished passive checks - not checking a response of " + responseInfo.getStatedMimeType() + " content type.");
+            return issues;
+        }
 
         if (url.endsWith(".js")){
             // This is a JavaScript resource and I don't need to check it

@@ -58,6 +58,11 @@ dependencies {
     // https://jsoup.org/
     compile group: 'org.jsoup', name: 'jsoup', version: '1.11.3'
 
+    // DNS library
+    // https://mvnrepository.com/artifact/dnsjava/dnsjava
+    // compile group: 'dnsjava', name: 'dnsjava', version: '2.1.8'
+
+
     // Burp plugin requirements
     compile 'net.portswigger.burp.extender:burp-extender-api:1.7.13'
 

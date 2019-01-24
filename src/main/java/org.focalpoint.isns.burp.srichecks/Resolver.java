@@ -49,9 +49,10 @@ public class Resolver
                     }
                 }
             }
-            envProps.remove(Context.INITIAL_CONTEXT_FACTORY);
+            //envProps.remove(Context.INITIAL_CONTEXT_FACTORY);
         } catch(NamingException e) {
             System.err.println(e.toString());
+            e.printStackTrace();
         }
         return results;
     }
@@ -76,9 +77,10 @@ public class Resolver
                     results.add(dnsEntryIterator.next().toString());
                 }
             }
-            envProps.remove(Context.INITIAL_CONTEXT_FACTORY);
+            //envProps.remove(Context.INITIAL_CONTEXT_FACTORY);
         } catch(NamingException e) {
             System.err.println(e.toString());
+            e.printStackTrace();
         }
         return results;
     }
@@ -104,9 +106,10 @@ public class Resolver
                     results.add(dnsEntryIterator.next().toString());
                 }
             }
-            envProps.remove(Context.INITIAL_CONTEXT_FACTORY);
+            //envProps.remove(Context.INITIAL_CONTEXT_FACTORY);
         } catch(NamingException e) {
             System.err.println(e.toString());
+            e.printStackTrace();
         }
         return results;
     }
@@ -119,20 +122,15 @@ public class Resolver
     public Set<String> getBadCnames(String hostName){
         Set<String> results = new TreeSet<String>();
         Set<String> cnames = new TreeSet<String>();
-        for (String cname : getRecords(hostName, "CNAME")){
-            cnames.add(cname);
-        }
-        Set<String> recordTypes = new TreeSet<String>();
+        cnames = getRecords(hostName, "CNAME");
         while (!cnames.isEmpty()){
             String thisCname = (String) cnames.toArray()[0];
-            // Get the record types for this CNAME
-            recordTypes = getAllRecordTypes(thisCname);
             // If there are CNAMEs, add them
-            if (recordTypes.contains("CNAME")){
+            if (hasRecordsOfType(thisCname, "CNAME")){
                 cnames.addAll(getRecords(thisCname, "CNAME"));
             }
             // If the set is empty, it didn't resolve
-            if (recordTypes.isEmpty()){
+            if (!(hasValidRecordsForAUrl(thisCname))){
                 results.add(thisCname);
             }
             cnames.remove(thisCname);
@@ -166,7 +164,7 @@ public class Resolver
      * @return boolean, true if this shakes out and could be used to get a resource
      */
     public boolean hasValidRecordsForAUrl(String hostName){
-        if (hasRecordsOfType(hostName, "A") || hasRecordsOfType(hostName, "AAAA") || hasRecordsOfType(hostName, "ALIAS") || hasRecordsOfType(hostName, "CNAME")){
+        if ((hasRecordsOfType(hostName, "A") || hasRecordsOfType(hostName, "AAAA")) || hasRecordsOfType(hostName, "CNAME")){
             // This should contain at least one record we can work with, but if it has CNAMEs let's lease them out
             if (hasRecordsOfType(hostName, "CNAME")){
                 return (!hasBadCnames(hostName));
@@ -176,8 +174,20 @@ public class Resolver
             }
         }
         else {
-            // This doesn't have any of the record types I would expect for a URL
-            return false;
+            // Try one last ditch effort
+            Set<String> recordTypes = getAllRecordTypes(hostName);
+            if ((recordTypes.contains("A") || recordTypes.contains("AAAA")) || recordTypes.contains("CNAME")){
+                // This should contain at least one record we can work with, but if it has CNAMEs let's lease them out
+                if (hasRecordsOfType(hostName, "CNAME")){
+                    return (!hasBadCnames(hostName));
+                } else {
+                    // Should be okay
+                    return true;
+                }
+            } else {
+                // This doesn't have any of the record types I would expect for a URL
+                return false;
+            }
         }
     }
 
@@ -190,6 +200,15 @@ public class Resolver
             System.out.println(item);
         }
     }
-    
+
+    /**
+     * Print a set of strings to stderr, one per line
+     * @param setToPrint
+     */
+    public void printStringSetToError(Set<String> setToPrint){
+        for (String item : setToPrint){
+            System.err.println(item);
+        }
+    }
 
 }

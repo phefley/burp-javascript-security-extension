@@ -42,7 +42,8 @@ public class ResolverTest {
 
     @Test public void testForValidUrl() {
         Resolver testunit = new Resolver();
-        String testHost = "focal-point.com";
+        String testHost = "js.hs-scripts.com";
         assertTrue(testunit.hasValidRecordsForAUrl(testHost));
     }
+
 }

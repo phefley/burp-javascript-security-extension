@@ -133,26 +133,24 @@ public class JavascriptResource {
      */
     public void getResource(){
         URI thisUri = URI.create(src);
-        // Let's see if the DNS for the resource resolves
         Resolver myResolver = new Resolver();
-        dnsValid = myResolver.hasValidRecordsForAUrl(thisUri.getHost());
-
-        if (dnsValid){
-            try {
-                /* 
-                * There is a chance at this point that callbacks is null, that's okay
-                * that is the way it should be for testing without going through burp
-                */
-                Requester myRequester = new Requester(callbacks, src);
-                data = myRequester.getResponseBody();
-            }
-            catch (Exception ex) {
-                data = NO_DATA_RECEIVED;
-                System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src);
-            }
-        } else {
+        try {
+            /* 
+            * There is a chance at this point that callbacks is null, that's okay
+            * that is the way it should be for testing without going through burp
+            */
+            Requester myRequester = new Requester(callbacks, src);
+            data = myRequester.getResponseBody();
+            dnsValid = !(myResolver.hasBadCnames(thisUri.getHost())); 
+            // look, if we were able to get the resource, as long as it has no bad cnames, we're good
+        }
+        catch (Exception ex) {
             data = NO_DATA_RECEIVED;
-            System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src + ". DNS was not valid.");
+            System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src);
+            dnsValid = myResolver.hasValidRecordsForAUrl(thisUri.getHost());
+            if (!(dnsValid)){
+                System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src + ". DNS was not valid for " + thisUri.getHost() + ".");
+            }
         }
     }
 

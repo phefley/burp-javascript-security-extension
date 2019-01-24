@@ -50,7 +50,7 @@ public class ScriptFinder{
     private IBurpExtenderCallbacks myCallbacks;
     private Integer PAGE_WAIT_TIMEOUT = 10;
     private String url="NONE";
-    private String html;
+    private String html="NONE";
     private String driverPath = "";
     private List<String> domScripts = new ArrayList<>();
     private List<String> htmlScripts = new ArrayList<>();
@@ -140,6 +140,8 @@ public class ScriptFinder{
             }
             catch (Exception ex) {
                 System.err.println("[-] There was an issue getting the JavaScript file at " + url);
+                System.err.println(ex.toString());
+                ex.printStackTrace();
             }
         }
     }

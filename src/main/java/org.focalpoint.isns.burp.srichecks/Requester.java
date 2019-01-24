@@ -128,14 +128,19 @@ public class Requester {
     public void makeRequestWithBurp(){
         byte[] requestBytes = myHelpers.buildHttpRequest(urlObj);
         rr = myCallbacks.makeHttpRequest(burpHttpService, requestBytes);
-        IResponseInfo responseObj = myHelpers.analyzeResponse(rr.getResponse());
-        statusCode = responseObj.getStatusCode();
-        if (statusCode == 200){
-            byte[] responseBodyBytes = Arrays.copyOfRange(rr.getResponse(), responseObj.getBodyOffset(), rr.getResponse().length);
-            responseBody = myHelpers.bytesToString(responseBodyBytes);
+        if (rr.getResponse() == null){
+            responseBody = NO_DATA_RECEIVED;
         }
         else {
-            responseBody = NO_DATA_RECEIVED;
+            IResponseInfo responseObj = myHelpers.analyzeResponse(rr.getResponse());
+            statusCode = responseObj.getStatusCode();
+            if (statusCode == 200){
+                byte[] responseBodyBytes = Arrays.copyOfRange(rr.getResponse(), responseObj.getBodyOffset(), rr.getResponse().length);
+                responseBody = myHelpers.bytesToString(responseBodyBytes);
+            }
+            else {
+                responseBody = NO_DATA_RECEIVED;
+            }
         }
     }
 
