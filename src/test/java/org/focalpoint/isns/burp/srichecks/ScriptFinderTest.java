@@ -42,15 +42,30 @@ public class ScriptFinderTest {
         assertTrue(true);
     }
 
+    @Test public void testUrlConditioning() {
+        String testUrl1 = "jquery-3.3.1.min.js";
+        String testUrl = "https://code.jquery.com/test.html";
+        ScriptFinder testunit = new ScriptFinder();
+        String conditionedUrl = testunit.conditionReceivedUrl(testUrl1, testUrl);
+        System.out.println("testing url conditioning...");
+        System.out.println(conditionedUrl);
+        assertTrue(conditionedUrl.equals("https://code.jquery.com/jquery-3.3.1.min.js"));
+    }
+
     @Test public void testSetAndParseHtml() {
-        String testUrl1 = "https://code.jquery.com/jquery-3.3.1abc.js";
-        String testUrl2 = "https://code.jquery.com/jquery-3.3.1def.js";
+        String testUrl1 = "https://code.jquery.com/jquery-3.3.1.min.js";
+        String testUrl2 = "https://code.jquery.com/jquery-3.3.1.js";
         String testUrl = "https://code.jquery.com/test.html";
         String TEST_HTML = "<html><head><title>Thisisatest</title></head><body><script src=\""+ testUrl1 + "\"></script><b>Thisisstillatest</b><script src=\"" + testUrl2 + "\"></script></body></html>";
         ScriptFinder testunit = new ScriptFinder();
         testunit.setUrl(testUrl);
         testunit.setHtml(TEST_HTML);
         List<String> scripts = testunit.getHtmlScripts();
+        System.out.println("testSetAndParseHtml");
+        for (String scrSrc : scripts){
+            System.out.println(" - " + scrSrc);
+        }
+        System.out.println();
         assertTrue(scripts.contains(testUrl2));
         assertTrue(testunit.getScripts().contains(testUrl1));
     }
@@ -72,8 +87,6 @@ public class ScriptFinderTest {
         testunit.setUrl(testUrl);
         assertEquals(testUrl, testunit.getUrl());
         testunit.retrieveHtml();
-        System.out.println("Test Download HTML:");
-        System.out.println(testunit.getHtml());
         assertTrue(testunit.getHtml().contains("Focal Point"));
     }
 

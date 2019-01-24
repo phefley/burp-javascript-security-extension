@@ -215,12 +215,17 @@ public class ScriptFinder{
      * @param baseUrl        the base URL to reference for protocol and FQDN as needed
      * @return               the full URL reconstructed as a string
      */
-    private String conditionReceivedUrl(String urlToCondition, String baseUrl){ 
+    public String conditionReceivedUrl(String urlToCondition, String baseUrl){ 
         try {
             URL parsedBase = new URL(baseUrl);
             try {
-                URL parsedUrl = new URL(urlToCondition);
-                return parsedUrl.toString();
+                if (urlToCondition.contains("/")){
+                    URL parsedUrl = new URL(urlToCondition);
+                    return parsedUrl.toString();
+                } else {
+                    URL parsedUrl = new URL(parsedBase.getProtocol(), parsedBase.getHost(), parsedBase.getPort(), "/" + urlToCondition);
+                    return parsedUrl.toString();
+                }
             }
             catch (MalformedURLException e){
                 if ((urlToCondition.startsWith("/")) && (!urlToCondition.startsWith("//"))) {
