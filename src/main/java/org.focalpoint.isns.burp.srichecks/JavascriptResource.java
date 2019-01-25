@@ -31,13 +31,14 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import org.focalpoint.isns.burp.srichecks.Resolver;
+//import org.focalpoint.isns.burp.srichecks.Resolver;
 
 public class JavascriptResource {
     private String src;
     private String originalTag;
     private Element parsedTag;
     private String data = "";
+    private byte[] binaryData = null;
     private Boolean dnsValid = false;
     private IBurpExtenderCallbacks callbacks = null;
     public static final String NO_DATA_RECEIVED = "NO DATA NO DATA NO DATA";
@@ -133,7 +134,7 @@ public class JavascriptResource {
      */
     public void getResource(){
         URI thisUri = URI.create(src);
-        Resolver myResolver = new Resolver();
+        //Resolver myResolver = new Resolver();
         try {
             /* 
             * There is a chance at this point that callbacks is null, that's okay
@@ -141,16 +142,18 @@ public class JavascriptResource {
             */
             Requester myRequester = new Requester(callbacks, src);
             data = myRequester.getResponseBody();
-            dnsValid = !(myResolver.hasBadCnames(thisUri.getHost())); 
+            binaryData = myRequester.getResponseBodyBytes();
+            //dnsValid = !(myResolver.hasBadCnames(thisUri.getHost())); 
             // look, if we were able to get the resource, as long as it has no bad cnames, we're good
+            dnsValid = true;
         }
         catch (Exception ex) {
             data = NO_DATA_RECEIVED;
             System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src);
-            dnsValid = myResolver.hasValidRecordsForAUrl(thisUri.getHost());
+            /*dnsValid = myResolver.hasValidRecordsForAUrl(thisUri.getHost());
             if (!(dnsValid)){
                 System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src + ". DNS was not valid for " + thisUri.getHost() + ".");
-            }
+            }*/
         }
     }
 
@@ -188,7 +191,8 @@ public class JavascriptResource {
             try {
                 MessageDigest digest = MessageDigest.getInstance(algorithm);
                 //byte[] encodedHash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
-                byte[] encodedHash = digest.digest(data.getBytes());
+                //byte[] encodedHash = digest.digest(data.getBytes());
+                byte[] encodedHash = digest.digest(binaryData);
                 return Base64.getEncoder().encodeToString(encodedHash);
             }
             catch (NoSuchAlgorithmException ex) {
@@ -237,12 +241,24 @@ public class JavascriptResource {
     }
 
     /**
+     * Get the integrity attribute from the HTML tag
+     * @return a string of the integrity attribute, null if there is none
+     */
+    public String getIntegrityAttribute(){
+        if (parsedTag.hasAttr("integrity")) {
+            return parsedTag.attr("integrity");
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Check the SRI integrity of a javascript tag
      * @return true if the integrity attribute is correct, false otherwise
      */
     public Boolean checkIntegrity(){
         if (parsedTag.hasAttr("integrity")) {
-            String integrityAttribute = parsedTag.attr("integrity");
+            String integrityAttribute = getIntegrityAttribute();
             String algorithm = integrityAttribute.substring(0, integrityAttribute.indexOf("-"));
             String hashToCheck = integrityAttribute.substring(integrityAttribute.indexOf("-")+1);
             return checkHash(hashToCheck, algorithm);

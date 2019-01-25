@@ -87,4 +87,21 @@ public class JavascriptResourceTest {
         System.out.println(testunit.getData());
         assertTrue(testunit.checkIntegrity());
     }
+
+    @Test public void testGithubIntegrity() {
+        String testUrl = "https://github.githubassets.com/assets/compat-6e5ed2648dae3be3f9358af5732a780f.js";
+        String originalTag = "<script crossorigin=\"anonymous\" integrity=\"sha512-Mp0nAOFvmE8PVQP49TPVMbQBLb+lpf3gu9GF1CPqybGGzl/8KEKDTKzuJpxxd5xF8HUi85xKPkssLtVVdLKtlw==\" type=\"application/javascript\" src=\"https://github.githubassets.com/assets/compat-6e5ed2648dae3be3f9358af5732a780f.js\"></script>";
+        JavascriptResource testunit = new JavascriptResource(null, testUrl, originalTag);
+        System.out.println("Github Integrity Testing");
+        System.out.println("-----------------");
+        System.out.println("Original tag: " + originalTag);
+        System.out.println("Hashes:");
+        HashMap<String,String> hashes = testunit.getHashes();
+        for (String hashAlgo : hashes.keySet()){
+            System.out.println("\t" + hashAlgo + " : " + hashes.get(hashAlgo));
+        }
+        System.out.println();
+        System.out.println(testunit.getData());
+        assertTrue(testunit.checkIntegrity());
+    }
 }

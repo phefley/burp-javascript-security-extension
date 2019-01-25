@@ -44,6 +44,7 @@ public class Requester {
     private IBurpExtenderCallbacks myCallbacks = null;
     private short statusCode = 0;
     private String responseBody = "";
+    private byte[] responseBodyBytes = null;
     public static final String NO_DATA_RECEIVED = "NO DATA NO DATA NO DATA";
     public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36";
 
@@ -136,7 +137,7 @@ public class Requester {
                 IResponseInfo responseObj = myHelpers.analyzeResponse(rr.getResponse());
                 statusCode = responseObj.getStatusCode();
                 if (statusCode == 200){
-                    byte[] responseBodyBytes = Arrays.copyOfRange(rr.getResponse(), responseObj.getBodyOffset(), rr.getResponse().length);
+                    responseBodyBytes = Arrays.copyOfRange(rr.getResponse(), responseObj.getBodyOffset(), rr.getResponse().length);
                     responseBody = myHelpers.bytesToString(responseBodyBytes);
                 }
                 else {
@@ -163,6 +164,7 @@ public class Requester {
             HttpResponse<String> response = client.send(request, BodyHandler.asString());
             statusCode = (short) response.statusCode();
             responseBody = response.body();
+            responseBodyBytes = response.body().getBytes();
         }
         catch (Exception ex) {
             System.err.println("[-] There was an issue getting the JavaScript file at " + urlString);
@@ -187,4 +189,11 @@ public class Requester {
         return responseBody;
     }
 
+    /**
+     * Get the response body from the request
+     * @return  the HTTP response body as an array of bytes
+     */
+    public byte[] getResponseBodyBytes(){
+        return responseBodyBytes;
+    }
 }

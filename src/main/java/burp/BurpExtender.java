@@ -30,6 +30,7 @@ import java.awt.Component;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -196,13 +197,20 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
                 if (!finder.getScriptObjectFor(scriptUrl).checkIntegrity()){
                     // Integrity check failed
                     List<int[]> matches = getMatches(baseRequestResponse.getResponse(), finder.getHtmlTagFor(scriptUrl).getBytes());
+                    String theseHashes = "<ul>";
+                    HashMap<String,String> hashes = finder.getScriptObjectFor(scriptUrl).getHashes();
+                    for (String algorithm : hashes.keySet()){
+                        theseHashes += "<li>" + algorithm + " : " + hashes.get(algorithm) + "</li>";
+                    }
+                    theseHashes += "</ul>";
+                    String integrityAttribute = finder.getScriptObjectFor(scriptUrl).getIntegrityAttribute();
                     issues.add(
                         new CustomScanIssue(
                             baseRequestResponse.getHttpService(),
                             helpers.analyzeRequest(baseRequestResponse).getUrl(), 
                             new IHttpRequestResponse[] { callbacks.applyMarkers(baseRequestResponse, null, matches) }, 
                             "JavaScript Subresource Integrity Failure",
-                            "The following script references utilize subresource integrity, however the hash provided in the integrity attribute does not match the hash of the JavaScript obtained from the URL: <br/><ul><li>" + scriptUrl + "</li></ul>",
+                            "The following script references utilize subresource integrity, however the hash provided in the integrity attribute does not match the hash of the JavaScript obtained from the URL: <br/><ul><li>" + scriptUrl + "</li></ul><p>The original integrity attribute was: " + integrityAttribute + "</p><p>The hashes obtained for the item are:" + theseHashes + "</p><p>The data obtained was:<br/><br/><pre>" + finder.getScriptObjectFor(scriptUrl).getData() + "</pre></p>",
                             "High",
                             "<p>When a script is served from a third-party source such as a public Content Delivery Network (CDN) location, the 'integrity' attribute of the 'script' tag should be used to confirm that the script can be trusted (i.e., it has not been modified from a version known to include only intended functionality and not be malicious). This attribute instructs the browser to load the third-party script, generate a hash of the file, and validate that its hash matches the hash of the exact version of the script known to be trusted before it can be executed. If the hash of the script loaded from the third-party source does not match the hash of the trusted version, most modern browsers will block the script's execution.</p><p>In order to enforce the use of subresource integrity for all scripts used across a site, the 'require-sri-for script' Content-Security-Policy directive should be used to instruct the browser to validate that the 'integrity' attribute is in place for all script elements.</p>"
                         )
