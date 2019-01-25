@@ -126,21 +126,28 @@ public class Requester {
      * Make the HTTP request via burp
      */
     public void makeRequestWithBurp(){
-        byte[] requestBytes = myHelpers.buildHttpRequest(urlObj);
-        rr = myCallbacks.makeHttpRequest(burpHttpService, requestBytes);
-        if (rr.getResponse() == null){
-            responseBody = NO_DATA_RECEIVED;
-        }
-        else {
-            IResponseInfo responseObj = myHelpers.analyzeResponse(rr.getResponse());
-            statusCode = responseObj.getStatusCode();
-            if (statusCode == 200){
-                byte[] responseBodyBytes = Arrays.copyOfRange(rr.getResponse(), responseObj.getBodyOffset(), rr.getResponse().length);
-                responseBody = myHelpers.bytesToString(responseBodyBytes);
-            }
-            else {
+        try {
+            byte[] requestBytes = myHelpers.buildHttpRequest(urlObj);
+            rr = myCallbacks.makeHttpRequest(burpHttpService, requestBytes);
+            if (rr.getResponse() == null){
                 responseBody = NO_DATA_RECEIVED;
             }
+            else {
+                IResponseInfo responseObj = myHelpers.analyzeResponse(rr.getResponse());
+                statusCode = responseObj.getStatusCode();
+                if (statusCode == 200){
+                    byte[] responseBodyBytes = Arrays.copyOfRange(rr.getResponse(), responseObj.getBodyOffset(), rr.getResponse().length);
+                    responseBody = myHelpers.bytesToString(responseBodyBytes);
+                }
+                else {
+                    responseBody = NO_DATA_RECEIVED;
+                }
+            }
+        }
+        catch (Exception e){
+            System.err.println("[-] There was an issue getting the JavaScript file at " + urlString);
+            e.printStackTrace();
+            responseBody = NO_DATA_RECEIVED;
         }
     }
 
@@ -159,6 +166,8 @@ public class Requester {
         }
         catch (Exception ex) {
             System.err.println("[-] There was an issue getting the JavaScript file at " + urlString);
+            ex.printStackTrace();
+            responseBody = NO_DATA_RECEIVED;
         }
     }
 
