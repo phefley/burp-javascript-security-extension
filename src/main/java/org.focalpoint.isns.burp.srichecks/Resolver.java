@@ -15,18 +15,34 @@
  */
 package org.focalpoint.isns.burp.srichecks;
 
-import javax.naming.directory.DirContext;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.naming.NamingEnumeration;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.TextParseException;
+import org.xbill.DNS.ARecord;
+import org.xbill.DNS.AAAARecord;
+import org.xbill.DNS.CNAMERecord;
+
+import java.util.HashMap;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
-import java.util.Hashtable;
 import java.util.TreeSet;
 
 public class Resolver
-{ 
+{
+    public static final Integer CNAME = 5;
+    public static final Integer A = 1;
+    public static final Integer AAAA = 28;
+    private HashMap<String,Integer> typeLookup = new HashMap<String,Integer>();
+
+
+    public Resolver(){
+        typeLookup.put("CNAME", CNAME);
+        typeLookup.put("A", A);
+        typeLookup.put("AAAA", AAAA);
+    }
+
+
     /**
      * A method to perform DNS queries using native Java
      * Reference: http://www.devguerrilla.com/notes/2014/10/java-looking-up-dns-entries-with-jndi/
@@ -34,85 +50,56 @@ public class Resolver
      * @param type a string of the DNS record type to look up
      * @return a set of strings which are results of the DNS query
      */
-    public Set<String> getRecords(String hostName, String type) {
-        Set<String> results = new TreeSet<String>();
+    public Set<String> getRecords(String hostName, Integer type) {
+        Set<String> retval = new TreeSet<String>();
         try {
-            Hashtable<String, String> envProps = new Hashtable<String, String>();
-            envProps.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
-            DirContext dnsContext = new InitialDirContext(envProps);
-            Attributes dnsEntries = dnsContext.getAttributes(hostName, new String[]{type});
-            if(dnsEntries != null) {
-                if (dnsEntries.get(type) != null){
-                    NamingEnumeration<?> dnsEntryIterator = dnsEntries.get(type).getAll();
-                    while(dnsEntryIterator.hasMoreElements()) {
-                        results.add(dnsEntryIterator.next().toString());
+            Lookup thisLookup = new Lookup(hostName, type);
+            Record[] results = thisLookup.run();
+            if (results != null){
+                List<Record> records = Arrays.asList(results);
+                for (Record record : records){
+                    if ((type == A) || (type == AAAA)){
+                        if (type == A){
+                            ARecord thisRecord = (ARecord) record;
+                            retval.add(thisRecord.getAddress().getHostAddress());
+                        } else {
+                            AAAARecord thisRecord = (AAAARecord) record;
+                            retval.add(thisRecord.getAddress().getHostAddress());
+                        }
+                    } else {
+                        if (record.getType() == CNAME){
+                            CNAMERecord thisRecord = (CNAMERecord) record;
+                            retval.add(thisRecord.getTarget().toString());
+                            // note: this could be getAlias, too
+                        } else {
+                            retval.add(record.toString());
+                        }
                     }
                 }
             }
-            //envProps.remove(Context.INITIAL_CONTEXT_FACTORY);
-        } catch(NamingException e) {
-            System.err.println(e.toString());
-            e.printStackTrace();
         }
-        return results;
-    }
-
-    /**
-     * Get all of the record types available
-     * 
-     * Note - this may not work on some DNS servers due to https://datatracker.ietf.org/doc/rfc8482/
-     * @param hostName a string of the hostname, or fqdn, to lookup 
-     * @return a set of strings which contains the results of all records available, prepended with the record type
-     */
-    public Set<String> getAllRecords(String hostName) {
-        Set<String> results = new TreeSet<String>();
-        try {
-            Hashtable<String, String> envProps = new Hashtable<String, String>();
-            envProps.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
-            DirContext dnsContext = new InitialDirContext(envProps);
-            Attributes dnsEntries = dnsContext.getAttributes(hostName,new String[]{"*"});
-            if(dnsEntries != null) {
-                NamingEnumeration<?> dnsEntryIterator = dnsEntries.getAll();
-                while(dnsEntryIterator.hasMoreElements()) {
-                    results.add(dnsEntryIterator.next().toString());
-                }
-            }
-            //envProps.remove(Context.INITIAL_CONTEXT_FACTORY);
-        } catch(NamingException e) {
-            System.err.println(e.toString());
-            e.printStackTrace();
-        }
-        return results;
+        catch (TextParseException e){
+            System.err.println("[SRI][-] There was an error parsing the name " + hostName);
+        }        
+        return retval;
     }
 
 
     /**
-     * Get all of the record types available for a hostname
-     * 
-     * Note - this may not work on some DNS servers due to https://datatracker.ietf.org/doc/rfc8482/
+     * A method to perform DNS queries using native Java
+     * Reference: http://www.devguerrilla.com/notes/2014/10/java-looking-up-dns-entries-with-jndi/
      * @param hostName a string of the hostname, or fqdn, to lookup 
-     * @return a set of strings which indicate all of the DNS types available
+     * @param type a string of the DNS record type to look up
+     * @return a set of strings which are results of the DNS query
      */
-    public Set<String> getAllRecordTypes(String hostName) {
-        Set<String> results = new TreeSet<String>();
-        try {
-            Hashtable<String, String> envProps = new Hashtable<String, String>();
-            envProps.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
-            DirContext dnsContext = new InitialDirContext(envProps);
-            Attributes dnsEntries = dnsContext.getAttributes(hostName,new String[]{"*"});
-            if(dnsEntries != null) {
-                NamingEnumeration<?> dnsEntryIterator = dnsEntries.getIDs();
-                while(dnsEntryIterator.hasMoreElements()) {
-                    results.add(dnsEntryIterator.next().toString());
-                }
-            }
-            //envProps.remove(Context.INITIAL_CONTEXT_FACTORY);
-        } catch(NamingException e) {
-            System.err.println(e.toString());
-            e.printStackTrace();
+    public Set<String> getRecords(String hostName, String typeStr) {
+        Set<String> retval = new TreeSet<String>();
+        if (typeLookup.containsKey(typeStr)){
+            retval.addAll(getRecords(hostName, typeLookup.get(typeStr)));
         }
-        return results;
+        return retval;
     }
+
 
     /**
      * Follow the CNAME breadcrumb trail and find any which can't resolve
@@ -120,22 +107,28 @@ public class Resolver
      * @return a set of strings which list the CNAME entries which could not be resolved
      */
     public Set<String> getBadCnames(String hostName){
-        Set<String> results = new TreeSet<String>();
-        Set<String> cnames = new TreeSet<String>();
-        cnames = getRecords(hostName, "CNAME");
-        while (!cnames.isEmpty()){
-            String thisCname = (String) cnames.toArray()[0];
-            // If there are CNAMEs, add them
-            if (hasRecordsOfType(thisCname, "CNAME")){
-                cnames.addAll(getRecords(thisCname, "CNAME"));
+        Set<String> retval = new TreeSet<String>();
+        try {
+            Lookup thisLookup = new Lookup(hostName, CNAME);
+            Record[] results = thisLookup.run();
+            if (results != null){
+                List<Record> records = Arrays.asList(results);
+                for (Record record : records){
+                    CNAMERecord thisRecord = (CNAMERecord) record;
+                    String target = thisRecord.getTarget().toString();
+                    // check for more cnames down the tree
+                    retval.addAll(getBadCnames(target));
+                    if (!(hasRecordsOfType(target, A) || hasRecordsOfType(target, AAAA))){
+                        // This one doesn't point to anything
+                        retval.add(target);
+                    }
+                }
             }
-            // If the set is empty, it didn't resolve
-            if (!(hasValidRecordsForAUrl(thisCname))){
-                results.add(thisCname);
-            }
-            cnames.remove(thisCname);
         }
-        return results;
+        catch (TextParseException e){
+            System.err.println("[SRI][-] There was an error parsing the name " + hostName);
+        }
+        return retval;
     }
     
     /**
@@ -153,10 +146,13 @@ public class Resolver
      * @param type a string of the DNS entry type
      * @return boolean, true if there are entries of the given type, false if not
      */
-    public boolean hasRecordsOfType(String hostName, String type){
+    public boolean hasRecordsOfType(String hostName, Integer type){
         return (getRecords(hostName, type).size() > 0);
     }
 
+    public boolean hasRecordsOfType(String hostName, String typeStr){
+        return (getRecords(hostName, typeStr).size() > 0);
+    }
 
     /**
      * Does the given hostName have entries necessary to get a URL
@@ -164,7 +160,7 @@ public class Resolver
      * @return boolean, true if this shakes out and could be used to get a resource
      */
     public boolean hasValidRecordsForAUrl(String hostName){
-        if ((hasRecordsOfType(hostName, "A") || hasRecordsOfType(hostName, "AAAA")) || hasRecordsOfType(hostName, "CNAME")){
+        if ((hasRecordsOfType(hostName, A) || hasRecordsOfType(hostName, AAAA)) || hasRecordsOfType(hostName, CNAME)){
             // This should contain at least one record we can work with, but if it has CNAMEs let's lease them out
             if (hasRecordsOfType(hostName, "CNAME")){
                 return (!hasBadCnames(hostName));
@@ -172,22 +168,8 @@ public class Resolver
                 // Should be okay
                 return true;
             }
-        }
-        else {
-            // Try one last ditch effort
-            Set<String> recordTypes = getAllRecordTypes(hostName);
-            if ((recordTypes.contains("A") || recordTypes.contains("AAAA")) || recordTypes.contains("CNAME")){
-                // This should contain at least one record we can work with, but if it has CNAMEs let's lease them out
-                if (hasRecordsOfType(hostName, "CNAME")){
-                    return (!hasBadCnames(hostName));
-                } else {
-                    // Should be okay
-                    return true;
-                }
-            } else {
-                // This doesn't have any of the record types I would expect for a URL
-                return false;
-            }
+        } else {
+            return false;
         }
     }
 

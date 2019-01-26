@@ -31,7 +31,7 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-//import org.focalpoint.isns.burp.srichecks.Resolver;
+import org.focalpoint.isns.burp.srichecks.Resolver;
 
 public class JavascriptResource {
     private String src;
@@ -134,26 +134,32 @@ public class JavascriptResource {
      */
     public void getResource(){
         URI thisUri = URI.create(src);
-        //Resolver myResolver = new Resolver();
-        try {
-            /* 
-            * There is a chance at this point that callbacks is null, that's okay
-            * that is the way it should be for testing without going through burp
-            */
-            Requester myRequester = new Requester(callbacks, src);
-            data = myRequester.getResponseBody();
-            binaryData = myRequester.getResponseBodyBytes();
-            //dnsValid = !(myResolver.hasBadCnames(thisUri.getHost())); 
-            // look, if we were able to get the resource, as long as it has no bad cnames, we're good
-            dnsValid = true;
-        }
-        catch (Exception ex) {
+        Resolver myResolver = new Resolver();
+        dnsValid = myResolver.hasValidRecordsForAUrl(thisUri.getHost());
+        if (dnsValid){
+            try {
+                /* 
+                * There is a chance at this point that callbacks is null, that's okay
+                * that is the way it should be for testing without going through burp
+                */
+                Requester myRequester = new Requester(callbacks, src);
+                data = myRequester.getResponseBody();
+                binaryData = myRequester.getResponseBodyBytes();
+                dnsValid = !(myResolver.hasBadCnames(thisUri.getHost())); 
+                // look, if we were able to get the resource, as long as it has no bad cnames, we're good
+                dnsValid = true;
+            }
+            catch (Exception ex) {
+                data = NO_DATA_RECEIVED;
+                System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src);
+                dnsValid = myResolver.hasValidRecordsForAUrl(thisUri.getHost());
+                if (!(dnsValid)){
+                    System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src + ". DNS was not valid for " + thisUri.getHost() + ".");
+                }
+            }
+        } else {
+            System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src + ". DNS was not valid for " + thisUri.getHost() + ".");
             data = NO_DATA_RECEIVED;
-            System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src);
-            /*dnsValid = myResolver.hasValidRecordsForAUrl(thisUri.getHost());
-            if (!(dnsValid)){
-                System.err.println("[JS-SRI][-] There was an issue getting the JavaScript file at " + src + ". DNS was not valid for " + thisUri.getHost() + ".");
-            }*/
         }
     }
 
@@ -190,8 +196,6 @@ public class JavascriptResource {
         if (hasData()){
             try {
                 MessageDigest digest = MessageDigest.getInstance(algorithm);
-                //byte[] encodedHash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
-                //byte[] encodedHash = digest.digest(data.getBytes());
                 byte[] encodedHash = digest.digest(binaryData);
                 return Base64.getEncoder().encodeToString(encodedHash);
             }

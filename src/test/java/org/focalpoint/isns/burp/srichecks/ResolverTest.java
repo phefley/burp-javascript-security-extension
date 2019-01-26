@@ -28,6 +28,7 @@ public class ResolverTest {
         assertTrue(results.size() > 0);
     }
 
+/*
     @Test public void testGetTypes() {
         Resolver testunit = new Resolver();
         String testHost = "focal-point.com";
@@ -39,6 +40,7 @@ public class ResolverTest {
         System.out.println("Record types available for " + testHost + ":");
         testunit.printStringSet(results);
     }   
+*/
 
     @Test public void testForValidUrl() {
         Resolver testunit = new Resolver();
