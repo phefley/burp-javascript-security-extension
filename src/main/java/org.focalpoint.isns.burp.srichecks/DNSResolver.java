@@ -148,6 +148,7 @@ public class DNSResolver
         return retval;
     }
     
+
     /**
      * Are there any bad CNAMEs in the trail for this hostname?
      * @param hostName a string of the hostname, or fqdn, to lookup 
@@ -156,6 +157,7 @@ public class DNSResolver
     public boolean hasBadCnames(String hostName){
         return (getBadCnames(hostName).size() > 0);
     }
+
 
     /**
      * Does the FQDN have any DNS entries of a given type?
@@ -167,9 +169,17 @@ public class DNSResolver
         return (getRecords(hostName, type).size() > 0);
     }
 
+
+    /**
+     * Does the FQDN have any DNS entries of a given type?
+     * @param hostName a string of the hostname, or fqdn, to lookup 
+     * @param typeStr a string of the DNS entry type to check for (e.g., "CNAME", "A")
+     * @return boolean, true if there are entries of the given type, false if not
+     */
     public boolean hasRecordsOfType(String hostName, String typeStr){
         return (getRecords(hostName, typeStr).size() > 0);
     }
+
 
     /**
      * Does the given hostName have entries necessary to get a URL
@@ -190,6 +200,7 @@ public class DNSResolver
         }
     }
 
+
     /**
      * Print a set of strings to stdout, one per line
      * @param setToPrint
@@ -200,6 +211,7 @@ public class DNSResolver
         }
     }
 
+    
     /**
      * Print a set of strings to stderr, one per line
      * @param setToPrint
