@@ -129,9 +129,7 @@ public class DNSResolver
                 List<Record> records = Arrays.asList(results);
                 for (Record record : records){
                     CNAMERecord thisRecord = (CNAMERecord) record;
-                    
                     String target = thisRecord.getTarget().toString();
-                    System.out.println("[getbadcnames] from host " + hostName + " got a CNAME with target " + target);
                     if (hasRecordsOfType(target, CNAME)){
                         // check for more cnames down the tree
                         retval.addAll(getBadCnames(target));
@@ -139,7 +137,6 @@ public class DNSResolver
                         if (!(hasRecordsOfType(target, A) || hasRecordsOfType(target, AAAA))){
                             // This one doesn't point to anything
                             retval.add(target);
-                            System.out.println("[getbadcnames][-] from host " + hostName + " got a CNAME with target " + target + " which has no A or AAAA records");
                         }
                     }
                 }
