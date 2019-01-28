@@ -38,6 +38,12 @@ When you run passive checks, the checks installed will run. Any output or errors
 4. When you can't load a JS resource, check to see if the domain is available. 
 
 
+## Known Issues
+I've seen weird caching issues with systemd-resolved, the default DNS service on Ubuntu. If you see resources which cannot be accessed due to DNS issues, consider disabling the DNS caching or clearing your cache. Both seem to help.
+
+```/etc/systemd > cat resolved.conf  | grep "Cache"
+Cache=no```
+
+
 ## References
  - https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity
- - https://github.com/PortSwigger/example-scanner-checks/blob/master/python/CustomScannerChecks.py

@@ -19,31 +19,27 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.Set;
 
-public class ResolverTest {
+public class DNSResolverTest {
 
     @Test public void testResolution() {
-        Resolver testunit = new Resolver();
+        DNSResolver testunit = new DNSResolver();
         String testHost = "focal-point.com";
         Set<String> results = testunit.getRecords(testHost, "A");
         assertTrue(results.size() > 0);
     }
 
-/*
-    @Test public void testGetTypes() {
-        Resolver testunit = new Resolver();
-        String testHost = "focal-point.com";
-        Set<String> results = testunit.getAllRecordTypes(testHost);
-        // Should contain an A record
-        assertTrue(results.contains("A"));
-        // Should contain an MX record
-        assertTrue(results.contains("MX"));
-        System.out.println("Record types available for " + testHost + ":");
-        testunit.printStringSet(results);
-    }   
-*/
+
+    @Test public void testCnameChain() {
+        DNSResolver testunit = new DNSResolver();
+        String testHost = "sjs.bizographics.com";
+        System.out.println("Testing for bad CNAMES...");
+        testunit.printStringSet(testunit.getBadCnames(testHost));
+        assertFalse(testunit.hasBadCnames(testHost));
+    }
+
 
     @Test public void testForValidUrl() {
-        Resolver testunit = new Resolver();
+        DNSResolver testunit = new DNSResolver();
         String testHost = "js.hs-scripts.com";
         assertTrue(testunit.hasValidRecordsForAUrl(testHost));
     }

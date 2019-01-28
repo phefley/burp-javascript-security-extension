@@ -215,62 +215,24 @@ public class ScriptFinder{
      * @param baseUrl        the base URL to reference for protocol and FQDN as needed
      * @return               the full URL reconstructed as a string
      */
-    public String conditionReceivedUrl(String urlToCondition, String baseUrl){ 
+    public String conditionReceivedUrl(String urlToCondition, String baseUrl){
         try {
             URL parsedBase = new URL(baseUrl);
             try {
-                if (urlToCondition.contains("/")){
-                    URL parsedUrl = new URL(urlToCondition);
-                    return parsedUrl.toString();
-                } else {
-                    URL parsedUrl = new URL(parsedBase.getProtocol(), parsedBase.getHost(), parsedBase.getPort(), "/" + urlToCondition);
-                    return parsedUrl.toString();
-                }
+                URL relativeUrl = new URL(parsedBase, urlToCondition);
+                return relativeUrl.toString();
             }
-            catch (MalformedURLException e){
-                if ((urlToCondition.startsWith("/")) && (!urlToCondition.startsWith("//"))) {
-                    // This is probably just a path. Let's try setting that.
-                    try {
-                        URL parsedPathUrl = new URL(parsedBase.getProtocol(), parsedBase.getHost(), parsedBase.getPort(), urlToCondition);
-                        return parsedPathUrl.toString();
-                    }
-                    catch (MalformedURLException e1){
-                        System.err.println("[-] Could not parse URL " + urlToCondition + " by attempting to parse it as a path.");
-                        return null;
-                    }
-                }
-                else {
-                    if (urlToCondition.startsWith("//")){
-                        // This should use the same protocol, but everything else should change
-                        try {
-                            String newUrl = parsedBase.getProtocol() + ":" + urlToCondition;
-                            URL parsedProtocolURL = new URL(newUrl);
-                            return parsedProtocolURL.toString();
-                        }
-                        catch (MalformedURLException e2) {
-                            System.err.println("[-] Could not parse URL " + urlToCondition + " by attempting to add a protocol.");
-                            return null;
-                        }
-                    }
-                    else {
-                        // What if it just starts with the host and assumes the protocol?
-                        try {
-                            URL parsedProtocolURL = new URL(parsedBase.getProtocol() + "://" + urlToCondition);
-                            return parsedProtocolURL.toString();
-                        }
-                        catch (MalformedURLException e2) {
-                            System.err.println("[-] Could not parse URL " + urlToCondition + " by attempting to add a protocol.");
-                            return null;
-                        }
-                    }
-                }
+            catch (MalformedURLException e) {
+                System.err.println("[-] Could not parse URL " + urlToCondition);
+                return null;
             }
         }
-        catch (MalformedURLException be){
+        catch (MalformedURLException e){
             System.err.println("[-] Could not parse base URL " + baseUrl);
             return null;
         }
     }
+    
 
     /**
      * Take the HTML this object has and find all of the scripts within it

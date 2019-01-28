@@ -21,31 +21,45 @@ import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.CNAMERecord;
+import org.xbill.DNS.SimpleResolver;
 
 import java.util.HashMap;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class Resolver
+public class DNSResolver
 {
     public static final Integer CNAME = 5;
     public static final Integer A = 1;
     public static final Integer AAAA = 28;
+    private static final String RESOLVER_NAME = null;
+    //private static final String RESOLVER_NAME = "8.8.8.8"; // Set this if you want a different resolver.
     private HashMap<String,Integer> typeLookup = new HashMap<String,Integer>();
+    private SimpleResolver myResolver = null;
 
 
-    public Resolver(){
+    public DNSResolver(){
         typeLookup.put("CNAME", CNAME);
         typeLookup.put("A", A);
         typeLookup.put("AAAA", AAAA);
+        try {
+            if (RESOLVER_NAME != null){
+                myResolver = new SimpleResolver(RESOLVER_NAME);
+            } else {
+                myResolver = new SimpleResolver();
+            }
+        }
+        catch (UnknownHostException e){
+            System.err.print("[SRI][DNSResolver][-] could not bind DNS to resolver at " + RESOLVER_NAME);
+        }
     }
 
 
     /**
      * A method to perform DNS queries using native Java
-     * Reference: http://www.devguerrilla.com/notes/2014/10/java-looking-up-dns-entries-with-jndi/
      * @param hostName a string of the hostname, or fqdn, to lookup 
      * @param type a string of the DNS record type to look up
      * @return a set of strings which are results of the DNS query
@@ -54,6 +68,7 @@ public class Resolver
         Set<String> retval = new TreeSet<String>();
         try {
             Lookup thisLookup = new Lookup(hostName, type);
+            //thisLookup.setResolver(myResolver);
             Record[] results = thisLookup.run();
             if (results != null){
                 List<Record> records = Arrays.asList(results);
@@ -70,7 +85,6 @@ public class Resolver
                         if (record.getType() == CNAME){
                             CNAMERecord thisRecord = (CNAMERecord) record;
                             retval.add(thisRecord.getTarget().toString());
-                            // note: this could be getAlias, too
                         } else {
                             retval.add(record.toString());
                         }
@@ -87,7 +101,6 @@ public class Resolver
 
     /**
      * A method to perform DNS queries using native Java
-     * Reference: http://www.devguerrilla.com/notes/2014/10/java-looking-up-dns-entries-with-jndi/
      * @param hostName a string of the hostname, or fqdn, to lookup 
      * @param type a string of the DNS record type to look up
      * @return a set of strings which are results of the DNS query
@@ -110,17 +123,24 @@ public class Resolver
         Set<String> retval = new TreeSet<String>();
         try {
             Lookup thisLookup = new Lookup(hostName, CNAME);
+            //thisLookup.setResolver(myResolver);
             Record[] results = thisLookup.run();
             if (results != null){
                 List<Record> records = Arrays.asList(results);
                 for (Record record : records){
                     CNAMERecord thisRecord = (CNAMERecord) record;
+                    
                     String target = thisRecord.getTarget().toString();
-                    // check for more cnames down the tree
-                    retval.addAll(getBadCnames(target));
-                    if (!(hasRecordsOfType(target, A) || hasRecordsOfType(target, AAAA))){
-                        // This one doesn't point to anything
-                        retval.add(target);
+                    System.out.println("[getbadcnames] from host " + hostName + " got a CNAME with target " + target);
+                    if (hasRecordsOfType(target, CNAME)){
+                        // check for more cnames down the tree
+                        retval.addAll(getBadCnames(target));
+                    } else {
+                        if (!(hasRecordsOfType(target, A) || hasRecordsOfType(target, AAAA))){
+                            // This one doesn't point to anything
+                            retval.add(target);
+                            System.out.println("[getbadcnames][-] from host " + hostName + " got a CNAME with target " + target + " which has no A or AAAA records");
+                        }
                     }
                 }
             }

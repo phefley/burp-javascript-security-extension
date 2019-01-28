@@ -31,7 +31,7 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import org.focalpoint.isns.burp.srichecks.Resolver;
+import org.focalpoint.isns.burp.srichecks.DNSResolver;
 
 public class JavascriptResource {
     private String src;
@@ -134,7 +134,7 @@ public class JavascriptResource {
      */
     public void getResource(){
         URI thisUri = URI.create(src);
-        Resolver myResolver = new Resolver();
+        DNSResolver myResolver = new DNSResolver();
         dnsValid = myResolver.hasValidRecordsForAUrl(thisUri.getHost());
         if (dnsValid){
             try {

@@ -66,6 +66,7 @@ public class ScriptFinderTest {
             System.out.println(" - " + scrSrc);
         }
         System.out.println();
+        assertTrue(testunit.getScripts().contains(testUrl2));
         assertTrue(scripts.contains(testUrl2));
         assertTrue(testunit.getScripts().contains(testUrl1));
     }
