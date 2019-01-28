@@ -41,8 +41,8 @@ When you run passive checks, the checks installed will run. Any output or errors
 ## Known Issues
 I've seen weird caching issues with systemd-resolved, the default DNS service on Ubuntu. If you see resources which cannot be accessed due to DNS issues, consider disabling the DNS caching or clearing your cache. Both seem to help.
 
-```/etc/systemd > cat resolved.conf  | grep "Cache"
-Cache=no```
+```/etc/systemd > cat resolved.conf  | grep "Cache"```
+```Cache=no```
 
 
 ## References
