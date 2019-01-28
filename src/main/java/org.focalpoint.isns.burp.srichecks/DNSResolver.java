@@ -68,7 +68,7 @@ public class DNSResolver
         Set<String> retval = new TreeSet<String>();
         try {
             Lookup thisLookup = new Lookup(hostName, type);
-            //thisLookup.setResolver(myResolver);
+            thisLookup.setResolver(myResolver);
             Record[] results = thisLookup.run();
             if (results != null){
                 List<Record> records = Arrays.asList(results);
@@ -123,7 +123,7 @@ public class DNSResolver
         Set<String> retval = new TreeSet<String>();
         try {
             Lookup thisLookup = new Lookup(hostName, CNAME);
-            //thisLookup.setResolver(myResolver);
+            thisLookup.setResolver(myResolver);
             Record[] results = thisLookup.run();
             if (results != null){
                 List<Record> records = Arrays.asList(results);
