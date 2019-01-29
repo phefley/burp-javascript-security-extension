@@ -34,10 +34,11 @@ public class ScriptFinderTest {
 
     @Test public void testDriverStartStop() {
         ScriptFinder testunit = new ScriptFinder();
-        testunit.setDriverPath("/usr/lib/chromium-browser/chromedriver");
+        //testunit.setDriverPath("/usr/lib/chromium-browser/chromedriver");
         String testUrl = "https://code.jquery.com/jquery-3.3.1.js";
         testunit.startDriver();
         testunit.stopDriver();
+        testunit.stopDriverService();
         // If you get here without any errors, you did a good thing.
         assertTrue(true);
     }
