@@ -53,6 +53,8 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 	private final static Integer MAX_DELAY_COLS = 3;
 	private final static Integer MAX_IOC_FIELD_COLS = 3;
 	private IoCChecker myIocChecker;
+
+	private DriverServiceManager myServiceManager;
 	
 	/**
 	 * Default constructor
@@ -78,6 +80,15 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 	public void setIocChecker(IoCChecker iocs){
 		myIocChecker = iocs;
 	}
+
+	/**
+	 * Set the driver service manager, linking the two so that the driver path can be modified
+	 * @param sm A driver service manager object to use
+	 */
+	public void setDriverServiceManager(DriverServiceManager sm){
+		myServiceManager = sm;
+	}
+
 
 	/**
 	 * Render the view
@@ -184,6 +195,7 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 			if (returnVal == JFileChooser.APPROVE_OPTION){
 				System.out.println("[JS-SRI][*] Selected " + getDriverPath() + " as the chrome-driver.");
 				filePathField.setText(getDriverPath());
+				myServiceManager.setOverrideDriverPath(getDriverPath());
 			}
 		}
 		// Handle the open IOC Button

@@ -59,102 +59,37 @@ public class ScriptFinder{
     private Integer PAGE_WAIT_TIMEOUT = 10;
     private String url="NONE";
     private String html="NONE";
-    private String driverPath = "";
     private List<String> domScripts = new ArrayList<>();
     private List<String> htmlScripts = new ArrayList<>();
     // Something to store a parsed URL
     private URL parsedUrl;
-    // A webdriver service to manage the life and death of the objects
-    private ChromeDriverService service;
+    // A webdriver service manager to handle the life and death of the driver objects
+    private DriverServiceManager serviceManager = null;
     // A webdriver object
     private WebDriver driver;
     // A dictionary of dom and html script data, respectively
     private HashMap<String,JavascriptResource> domScriptData = new HashMap<String,JavascriptResource>();
     private HashMap<String,JavascriptResource> htmlScriptData = new HashMap<String,JavascriptResource>();
-    // DRIVER PATHS in resources
-    private final String LINUX_DRIVER_RESOURCE_PATH = "/linux/chromedriver";
-    private final String MAC_DRIVER_RESOURCE_PATH = "/mac/chromedriver";
-    private final String WINDOWS_DRIVER_RESOURCE_PATH = "/windows/chromedriver.exe";
+
 
 
     public ScriptFinder(){
-        startDriverService();
     }
 
-
-    private File getDriverResourceFile(){
-        String osName = System.getProperty("os.name").toLowerCase();
-        String fileName = null;
-        boolean needToChmod = false;
-        if (osName.contains("linux")){
-            fileName = LINUX_DRIVER_RESOURCE_PATH;
-            needToChmod = true;
-        } else {
-            if (osName.contains("windows")){
-                fileName = WINDOWS_DRIVER_RESOURCE_PATH;
-            } else {
-                if (osName.contains("mac")){
-                    fileName = MAC_DRIVER_RESOURCE_PATH;
-                    needToChmod = true;
-                }
-            }
-        }
-        File retval = null;
-        if (fileName != null){
-            retval = getResourceAsFile(fileName);
-            if (needToChmod) {
-                //String newFilePath = retval.getAbsolutePath();
-                //Runtime.getRuntime().exec("chmod u+x " + newFilePath);
-                retval.setExecutable(true);
-            }
-        }
-        return retval;
+    /**
+     * Set the driver service manager to use for this finder
+     * @param sm the driver service manager to use
+     */
+    public void setDriverManager(DriverServiceManager sm){
+        serviceManager = sm;
     }
 
-
-    private File getResourceAsFile(String resourcePath) {
-        try {
-            InputStream in = this.getClass().getResourceAsStream(resourcePath);
-            if (in == null) {
-                return null;
-            }
-    
-            File tempFile = File.createTempFile(String.valueOf(in.hashCode()), ".tmp");
-            tempFile.deleteOnExit();
-    
-            try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                //copy stream
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-            }
-            return tempFile;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-    public void startDriverService(){
-        try{
-            // https://seleniumhq.github.io/selenium/docs/api/java/
-            //String driverFileName = this.getClass().getResource(getDriverResourcePath()).getFile();
-            //System.out.println("Will attempt to start driver service from " + driverFileName);
-            File driverFile = getDriverResourceFile();
-            service = new ChromeDriverService.Builder().usingDriverExecutable(driverFile).usingAnyFreePort().build();
-            service.start();
-        }
-        catch (IOException e){
-            System.err.println("[JS-SRI][-] Could not start chromedriver service");
-        }
-    }
-
-
-    public void stopDriverService(){
-        service.stop();
+    /**
+     * Get rge driver service manager used by this instance
+     * @return the driverservicemanager object being used by this object
+     */
+    public DriverServiceManager getDriverManager(){
+        return serviceManager;
     }
 
     /**
@@ -203,21 +138,6 @@ public class ScriptFinder{
         return PAGE_WAIT_TIMEOUT;
     }
 
-    /**
-     * Set the chromedriver path that Selenium should use
-     * @param driverPathStr a string of the path to the chromedriver binary
-     */
-    public void setDriverPath(String driverPathStr){
-        driverPath = driverPathStr;
-    }
-
-    /**
-     * Get the path of the chromedriver this object is using
-     * @return a string of the path that this object is configured to use for the chromedriver binary
-     */
-    public String getDriverPath(){
-        return driverPath;
-    }
 
     /**
      * There is no reason that this should ever be called within burp. It is just here for tests.
@@ -245,7 +165,7 @@ public class ScriptFinder{
      * Start the Selenium chrome driver instance with lean options
      */
     public void startDriver(){
-        if (!driverPath.isEmpty()){
+        if (serviceManager != null){
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--headless");
             options.addArguments("--no-sandbox");
@@ -253,14 +173,11 @@ public class ScriptFinder{
             HashMap<String, Object> prefs = new HashMap<String, Object>(); 
             prefs.put("profile.managed_default_content_settings.images", 2);
             options.setExperimentalOption("prefs", prefs); 
-            // Remember that the default is "/usr/lib/chromium-browser/chromedriver"
-            //System.setProperty("webdriver.chrome.driver","resources/linux/chromedriver");
-            //System.setProperty("webdriver.chrome.driver", driverPath);
-            driver = new RemoteWebDriver(service.getUrl(), options);
+            driver = new RemoteWebDriver(serviceManager.getService().getUrl(), options);
             driver.manage().timeouts().implicitlyWait(PAGE_WAIT_TIMEOUT, TimeUnit.SECONDS); // Wait for the page to be completely loaded. Or reasonably loaded.
         }
         else {
-            System.err.println("You must set a driver path before you can start a driver.");
+            System.err.println("[JS-SRI][-] You must set a driver service manager before you can start a driver.");
         }
     }
 

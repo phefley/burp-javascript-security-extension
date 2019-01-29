@@ -39,6 +39,7 @@ import org.focalpoint.isns.burp.srichecks.ScriptFinder;
 import org.focalpoint.isns.burp.srichecks.IoCChecker;
 import org.focalpoint.isns.burp.srichecks.JavascriptResource;
 import org.focalpoint.isns.burp.srichecks.PluginConfigurationTab;
+import org.focalpoint.isns.burp.srichecks.DriverServiceManager;
 
 import javax.swing.SwingUtilities;
 
@@ -46,10 +47,16 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
 {
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
-    private IoCChecker iocChecker = new IoCChecker();
+    private IoCChecker iocChecker;
+    private DriverServiceManager serviceManager;
     private Integer scanNumber = 0;
 
     private PluginConfigurationTab panel;
+
+    public BurpExtender(){
+        iocChecker = new IoCChecker();
+        serviceManager = new DriverServiceManager();
+    }
 
     //
     // implement IBurpExtender
@@ -77,6 +84,7 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
                 // main panel
                 panel = new PluginConfigurationTab();
                 panel.setIocChecker(iocChecker);
+                panel.setDriverServiceManager(serviceManager);
                 panel.render();
                 callbacks.customizeUiComponent(panel);
 
@@ -308,7 +316,7 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
         ScriptFinder scriptFinder = new ScriptFinder();
         scriptFinder.setCallbacks(callbacks);
         scriptFinder.setTimeout(panel.getDelay());
-        scriptFinder.setDriverPath(panel.getDriverPath());
+        scriptFinder.setDriverManager(serviceManager);
         // Find the URL
         String url = helpers.analyzeRequest(baseRequestResponse).getUrl().toString();
         // Get the response contents for the passive scan

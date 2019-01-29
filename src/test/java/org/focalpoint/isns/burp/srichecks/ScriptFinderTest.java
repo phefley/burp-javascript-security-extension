@@ -21,7 +21,6 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.focalpoint.isns.burp.srichecks.ScriptFinder;
 import org.jsoup.nodes.Element;
 
 public class ScriptFinderTest {
@@ -34,11 +33,11 @@ public class ScriptFinderTest {
 
     @Test public void testDriverStartStop() {
         ScriptFinder testunit = new ScriptFinder();
-        //testunit.setDriverPath("/usr/lib/chromium-browser/chromedriver");
+        DriverServiceManager sm = new DriverServiceManager();
+        testunit.setDriverManager(sm);
         String testUrl = "https://code.jquery.com/jquery-3.3.1.js";
         testunit.startDriver();
         testunit.stopDriver();
-        testunit.stopDriverService();
         // If you get here without any errors, you did a good thing.
         assertTrue(true);
     }
@@ -85,7 +84,8 @@ public class ScriptFinderTest {
     @Test public void testDownloadHtml(){
         ScriptFinder testunit = new ScriptFinder();
         String testUrl = "https://focal-point.com";
-        testunit.setDriverPath("/usr/lib/chromium-browser/chromedriver");
+        DriverServiceManager sm = new DriverServiceManager();
+        testunit.setDriverManager(sm);
         testunit.setUrl(testUrl);
         assertEquals(testUrl, testunit.getUrl());
         testunit.retrieveHtml();
@@ -95,7 +95,8 @@ public class ScriptFinderTest {
     @Test public void testCheckForDomScripts(){
         ScriptFinder testunit = new ScriptFinder();
         String testUrl = "https://focal-point.com";
-        testunit.setDriverPath("/usr/lib/chromium-browser/chromedriver");
+        DriverServiceManager sm = new DriverServiceManager();
+        testunit.setDriverManager(sm);
         testunit.setUrl(testUrl);
         testunit.retrieveHtml();
         testunit.checkForDomScripts();
@@ -123,7 +124,8 @@ public class ScriptFinderTest {
         List<String> sriMissingScripts = new ArrayList<>();
         String testUrl = "https://focal-point.com";
         ScriptFinder testunit = new ScriptFinder();
-        testunit.setDriverPath("/usr/lib/chromium-browser/chromedriver");
+        DriverServiceManager sm = new DriverServiceManager();
+        testunit.setDriverManager(sm);
         testunit.setUrl(testUrl);
         testunit.retrieveHtml();
         testunit.checkForDomScripts();
