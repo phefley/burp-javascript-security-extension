@@ -17,13 +17,12 @@ Written by: Peter Hefley
 
 ## Installation
 1. Obtain a copy of this repo.
-2. Install the chromedriver shim between selenium and chromium. On Ubuntu, this is done by issuing the following command: 
-   ```sudo apt install chromium-chromedriver```
+2. Ensure that Chrome/Chromium is installed in a standard location.
 3. In burp, go to the extender tab, extensions sub-tab, and Add this extension. It is a Java extension type and you will need to select the included, or built, jar file.
 
 ## Configuration
 A "JavaScript Security" tab will appear in your burp session which allows you to configure two things:
-- The path to the chromedriver binary you want to use. This defaults to the standard location it is installed to in Linux.
+- The path to the chromedriver binary you want to use. This defaults to the bundled version appropriate for your operating system. Setting a chromedriver here will override the default.
 - The delay before evaluating the DOM (in seconds). As all of the JavaScript is gathered and run, the DOM may change over time. For advanced pages or slow connections, you might want to bump this up, but passive scans will take longer. The default, which I've had luck with, is 10 seconds.
 
 It is possible to load indicators of compromise (IOCs) as JSON files through the GUI tab. Examples are provided in the intel folder.
@@ -48,3 +47,5 @@ I've seen weird caching issues with systemd-resolved, the default DNS service on
 
 ## References
  - https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity
+ - https://chromedriver.chromium.org/capabilities
+ 
