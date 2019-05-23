@@ -38,10 +38,10 @@ import java.io.InputStream;
 
 import java.util.concurrent.TimeUnit;
 
-import jdk.incubator.http.HttpClient;
-import jdk.incubator.http.HttpRequest;
-import jdk.incubator.http.HttpResponse;
-import jdk.incubator.http.HttpResponse.BodyHandler;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -150,7 +150,7 @@ public class ScriptFinder{
                 .uri(URI.create(url))
                 .build();
             try {
-                HttpResponse<String> response = client.send(request, BodyHandler.asString());
+                HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
                 setHtml(response.body());
             }
             catch (Exception ex) {

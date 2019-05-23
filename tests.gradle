@@ -14,18 +14,9 @@ plugins {
     id 'application'
 }
 
-version = '1.0'
-
-compileJava {
-  options.compilerArgs += ["--add-modules", "jdk.incubator.httpclient"]
-}
-
-compileTestJava {
-  options.compilerArgs += ["--add-modules", "jdk.incubator.httpclient"]
-}
+version = '1.1'
 
 test {
-  jvmArgs += ["--add-modules", "jdk.incubator.httpclient"]
   testLogging {
      events "passed", "skipped", "failed"
   }
@@ -43,10 +34,6 @@ repositories {
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     implementation 'com.google.guava:guava:26.0-jre'
-
-    // https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin
-    // compile group: 'org.apache.maven.plugins', name: 'maven-compiler-plugin', version: '3.8.0'
-    // TODO - this should be removed, as it was only used for the incubated HTTP stuff.
 
     // https://mvnrepository.com/artifact/org.apache.clerezza.ext/org.json.simple
     compile group: 'org.apache.clerezza.ext', name: 'org.json.simple', version: '0.4'

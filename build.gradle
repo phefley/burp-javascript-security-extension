@@ -14,24 +14,7 @@ plugins {
     id 'application'
 }
 
-version = '1.0'
-
-/*
-compileJava {
-  options.compilerArgs += ["--add-modules", "jdk.incubator.httpclient"]
-}
-
-compileTestJava {
-  options.compilerArgs += ["--add-modules", "jdk.incubator.httpclient"]
-}
-
-test {
-  jvmArgs += ["--add-modules", "jdk.incubator.httpclient"]
-  testLogging {
-     events "passed", "skipped", "failed"
-  }
-}
-*/
+version = '1.1'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'

@@ -25,11 +25,10 @@ import burp.IBurpExtenderCallbacks;
 import burp.IHttpRequestResponse;
 import burp.IResponseInfo;
 
-// To use the incubated HTTP interface
-import jdk.incubator.http.HttpClient;
-import jdk.incubator.http.HttpRequest;
-import jdk.incubator.http.HttpResponse;
-import jdk.incubator.http.HttpResponse.BodyHandler;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.net.URI;
 
 
@@ -161,7 +160,7 @@ public class Requester {
             .uri(URI.create(urlString))
             .build();
         try {
-            HttpResponse<String> response = client.send(request, BodyHandler.asString());
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
             statusCode = (short) response.statusCode();
             responseBody = response.body();
             responseBodyBytes = response.body().getBytes();

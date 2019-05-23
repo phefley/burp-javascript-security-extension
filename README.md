@@ -44,6 +44,8 @@ I've seen weird caching issues with systemd-resolved, the default DNS service on
 
 ```Cache=no```
 
+When you change your version of Chrome, you will also need to change your version of ChromeDriver, now. Google no longer supports drivers for a range of chrome versions. See http://chromedriver.chromium.org/downloads/version-selection
+
 
 ## References
  - https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity
