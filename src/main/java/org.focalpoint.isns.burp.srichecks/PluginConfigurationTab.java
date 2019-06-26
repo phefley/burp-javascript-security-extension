@@ -87,7 +87,7 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 	 */
 	public void setDriverServiceManager(DriverServiceManager sm){
 		myServiceManager = sm;
-		myServiceManager.setDriverPath(getDriverPath());
+		//myServiceManager.setDriverPath(getDriverPath());
 	}
 
 
