@@ -18,7 +18,9 @@ Written by: Peter Hefley
 ## Installation
 1. Obtain a copy of this repo.
 2. Ensure that Chrome/Chromium is installed in a standard location.
-3. In burp, go to the extender tab, extensions sub-tab, and Add this extension. It is a Java extension type and you will need to select the included, or built, jar file.
+3. Obtain the appropriate chromedriver for your OS and version of Chrome (see: http://chromedriver.chromium.org/downloads/version-selection). Note the file location.
+4. In burp, go to the extender tab, extensions sub-tab, and Add this extension. It is a Java extension type and you will need to select the included, or built, jar file.
+5. Once started, select the "JavaScript Security" tab and set the correct chrome driver location.
 
 ## Configuration
 A "JavaScript Security" tab will appear in your burp session which allows you to configure two things:

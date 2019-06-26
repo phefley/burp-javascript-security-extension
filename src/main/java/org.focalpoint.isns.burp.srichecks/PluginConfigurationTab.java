@@ -87,6 +87,7 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 	 */
 	public void setDriverServiceManager(DriverServiceManager sm){
 		myServiceManager = sm;
+		myServiceManager.setDriverPath(getDriverPath());
 	}
 
 
@@ -195,7 +196,7 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 			if (returnVal == JFileChooser.APPROVE_OPTION){
 				System.out.println("[JS-SRI][*] Selected " + getDriverPath() + " as the chrome-driver.");
 				filePathField.setText(getDriverPath());
-				myServiceManager.setOverrideDriverPath(getDriverPath());
+				myServiceManager.setDriverPath(getDriverPath());
 			}
 		}
 		// Handle the open IOC Button

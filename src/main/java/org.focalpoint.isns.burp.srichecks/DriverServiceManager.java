@@ -36,71 +36,13 @@ import java.io.InputStream;
 
 public class DriverServiceManager {
 
-    // DRIVER PATHS in resources
-    private final String LINUX_DRIVER_RESOURCE_PATH = "/linux/chromedriver";
-    private final String MAC_DRIVER_RESOURCE_PATH = "/mac/chromedriver";
-    private final String WINDOWS_DRIVER_RESOURCE_PATH = "/windows/chromedriver.exe";
-
-    private Boolean overrideResourceBinaries = false;
     private String chromeDriverFilePath;
-
+    private static String DEFAULT_DRIVER_PATH = "/usr/lib/chromium-browser/chromedriver";
     private ChromeDriverService service;
 
     public DriverServiceManager(){
+        chromeDriverFilePath = DEFAULT_DRIVER_PATH;
         startDriverService();
-    }
-
-    private File getDriverResourceFile(){
-        String osName = System.getProperty("os.name").toLowerCase();
-        String fileName = null;
-        boolean needToChmod = false;
-        if (osName.contains("linux")){
-            fileName = LINUX_DRIVER_RESOURCE_PATH;
-            needToChmod = true;
-        } else {
-            if (osName.contains("windows")){
-                fileName = WINDOWS_DRIVER_RESOURCE_PATH;
-            } else {
-                if (osName.contains("mac")){
-                    fileName = MAC_DRIVER_RESOURCE_PATH;
-                    needToChmod = true;
-                }
-            }
-        }
-        File retval = null;
-        if (fileName != null){
-            retval = getResourceAsFile(fileName);
-            if (needToChmod) {
-                retval.setExecutable(true);
-            }
-        }
-        return retval;
-    }
-
-
-    private File getResourceAsFile(String resourcePath) {
-        try {
-            InputStream in = this.getClass().getResourceAsStream(resourcePath);
-            if (in == null) {
-                return null;
-            }
-    
-            File tempFile = File.createTempFile(String.valueOf(in.hashCode()), ".tmp");
-            tempFile.deleteOnExit();
-    
-            try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                //copy stream
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-            }
-            return tempFile;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
 
@@ -108,11 +50,7 @@ public class DriverServiceManager {
         try{
             // https://seleniumhq.github.io/selenium/docs/api/java/
             File driverFile;
-            if (overrideResourceBinaries){
-                driverFile = new File(chromeDriverFilePath);
-            } else {
-                driverFile = getDriverResourceFile();
-            }
+            driverFile = new File(chromeDriverFilePath);
             service = new ChromeDriverService.Builder().usingDriverExecutable(driverFile).usingAnyFreePort().build();
             service.start();
         }
@@ -137,13 +75,7 @@ public class DriverServiceManager {
         }
     }
 
-    public void useBundledDrivers(){
-        overrideResourceBinaries = false;
-        reloadIfRunning();
-    }
-
-    public void setOverrideDriverPath(String path){
-        overrideResourceBinaries = true;
+    public void setDriverPath(String path){
         chromeDriverFilePath = path;
         reloadIfRunning();
     }
