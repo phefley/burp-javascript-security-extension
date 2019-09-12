@@ -57,6 +57,9 @@ public class DriverServiceManager {
         catch (IOException e){
             System.err.println("[JS-SRI][-] Could not start chromedriver service");
         }
+        catch (IllegalStateException e){
+            System.err.println("[JS-SRI][-] Could not start chromedriver service");
+        }
     }
 
     public void stopDriverService(){

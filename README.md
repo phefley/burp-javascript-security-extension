@@ -3,7 +3,7 @@ This is a burp extension which adds passive checks to the Burp scanner. The foll
 
   - Cross-Domain Script Includes (DOM)
   - JavaScript Missing Subresource Integrity Attributes
-  - CORS Headers Do Not Require Subresource Integrity
+  - CSP Headers Do Not Require Subresource Integrity
   - Malicious/Vulnerable JavaScript Includes
   - Subresource Integrity Failed Validation
   - Cross-Domain Script Includes where DNS Resolution Fails
