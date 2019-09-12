@@ -63,7 +63,9 @@ public class DriverServiceManager {
     }
 
     public void stopDriverService(){
-        service.stop();
+        if (service != null) {
+            service.stop();
+        }
     }
 
     public ChromeDriverService getService(){
@@ -71,16 +73,28 @@ public class DriverServiceManager {
     }
 
     private void reloadIfRunning(){
-        if (service.isRunning()){
-            // Restart it
-            stopDriverService();
-            startDriverService();
+        if (service != null){
+            if (service.isRunning()){
+                // Restart it
+                stopDriverService();
+                startDriverService();
+            }
         }
+    }
+
+    private void reload(){
+        if (service != null){
+            if (service.isRunning()){
+                stopDriverService();
+            }
+        }
+        startDriverService();
     }
 
     public void setDriverPath(String path){
         chromeDriverFilePath = path;
-        reloadIfRunning();
+        System.out.println("[JS-SRI] Set chromedriver path to " + path);
+        reload();
     }
 
 }
