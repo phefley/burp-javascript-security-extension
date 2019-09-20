@@ -85,6 +85,7 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
                 panel = new PluginConfigurationTab();
                 panel.setIocChecker(iocChecker);
                 panel.setDriverServiceManager(serviceManager);
+                panel.setCallbacks(callbacks);
                 panel.render();
                 callbacks.customizeUiComponent(panel);
 
