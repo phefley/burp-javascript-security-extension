@@ -38,11 +38,21 @@ public class DriverServiceManager {
 
     private String chromeDriverFilePath;
     private static String DEFAULT_DRIVER_PATH = "/usr/lib/chromium-browser/chromedriver";
+    private final static String SETTING_CHROMEDRIVER_PATH = "jssecurity.chromedriverpath";
     private ChromeDriverService service;
+    private IBurpExtenderCallbacks myCallbacks;
 
     public DriverServiceManager(){
+        // Just default to the default driver path
         chromeDriverFilePath = DEFAULT_DRIVER_PATH;
-        startDriverService();
+    }
+
+    public void setCallbacks(IBurpExtenderCallbacks cb){
+        myCallbacks = cb;
+        // Get the filepath setting
+        if (myCallbacks.loadExtensionSetting(SETTING_CHROMEDRIVER_PATH) != null){
+			chromeDriverFilePath = myCallbacks.loadExtensionSetting(SETTING_CHROMEDRIVER_PATH);
+		}
     }
 
 

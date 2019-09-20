@@ -77,6 +77,10 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
         // register ourselves as a custom scanner check
         callbacks.registerScannerCheck(this);
 
+        // Setup the driverservicemanager
+        serviceManager.setCallbacks(callbacks);
+        serviceManager.startDriverService();
+
         // Create the config tab
         SwingUtilities.invokeLater(new Runnable() {
             @Override
