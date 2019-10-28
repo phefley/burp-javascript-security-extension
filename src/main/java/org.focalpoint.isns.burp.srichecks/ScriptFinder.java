@@ -323,11 +323,19 @@ public class ScriptFinder{
     }
 
     /**
-     * Get a list of the cross-domain scripts not referenced by the page's  DO
-     * @return a List object of Strings which are URLs to cross-domain JS resources not referenced by the page's DOM
+     * Get a list of the cross-domain scripts referenced by the page's  DOM
+     * @return a List object of Strings which are URLs to cross-domain JS resources referenced by the page's DOM
      */
     public List<String> getCrossDomainDomScripts(){
         return selectCrossDomainScripts(domScripts);
+    }
+
+    /**
+     * Get a list of the cross-domain scripts only referenced by the page's  DOM
+     * @return a List object of Strings which are URLs to cross-domain JS resources only referenced by the page's DOM
+     */
+    public List<String> getCrossDomainDomOnlyScripts(){
+        return selectCrossDomainScripts(getDomOnlyScripts());
     }
 
     /**

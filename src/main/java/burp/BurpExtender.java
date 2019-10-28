@@ -151,9 +151,9 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
     // Check for Cross-Domain Script Includes (DOM)
     public List<IScanIssue> checkForCrossDomainScriptIncludesDom(IHttpRequestResponse baseRequestResponse, ScriptFinder finder){
         List<IScanIssue> issues = new ArrayList<>();
-        if (finder.getCrossDomainDomScripts().size() > 0){
+        if (finder.getCrossDomainDomOnlyScripts().size() > 0){
             String scriptString = "";
-            for (String scriptUrl : finder.getCrossDomainDomScripts()){
+            for (String scriptUrl : finder.getCrossDomainDomOnlyScripts()){
                 scriptString += "<li>" + scriptUrl + "</li>";
             }
             issues.add(

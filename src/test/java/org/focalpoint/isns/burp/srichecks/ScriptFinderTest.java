@@ -34,6 +34,7 @@ public class ScriptFinderTest {
     @Test public void testDriverStartStop() {
         ScriptFinder testunit = new ScriptFinder();
         DriverServiceManager sm = new DriverServiceManager();
+        sm.startDriverService();
         testunit.setDriverManager(sm);
         String testUrl = "https://code.jquery.com/jquery-3.3.1.js";
         testunit.startDriver();
@@ -96,6 +97,7 @@ public class ScriptFinderTest {
         ScriptFinder testunit = new ScriptFinder();
         String testUrl = "https://focal-point.com";
         DriverServiceManager sm = new DriverServiceManager();
+        sm.startDriverService();
         testunit.setDriverManager(sm);
         testunit.setUrl(testUrl);
         testunit.retrieveHtml();
@@ -118,13 +120,14 @@ public class ScriptFinderTest {
 
     @Test public void runtimeTestFopo(){
         final String KNOWN_HTML_SCRIPT = "https://js.hs-scripts.com/2762002.js";
-        final String KNOWN_DOM_SCRIPT = "https://www.youtube.com/iframe_api";
+        final String KNOWN_DOM_SCRIPT = "https://js.usemessages.com/conversations-embed.js";
 
         List<String> sriScripts = new ArrayList<>();
         List<String> sriMissingScripts = new ArrayList<>();
         String testUrl = "https://focal-point.com";
         ScriptFinder testunit = new ScriptFinder();
         DriverServiceManager sm = new DriverServiceManager();
+        sm.startDriverService();
         testunit.setDriverManager(sm);
         testunit.setUrl(testUrl);
         testunit.retrieveHtml();
