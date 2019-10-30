@@ -29,6 +29,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+// XML Handling
+import org.w3c.dom.*;
+import org.xml.sax.*;
+import javax.xml.parsers.*;
+import javax.xml.xpath.*;
+import java.io.*;
+
 import org.focalpoint.isns.burp.srichecks.JavaScriptIOC;
 
 public class IoCChecker {
@@ -163,6 +170,20 @@ public class IoCChecker {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Import IOCs from an OpenIOC 1.1 formatted XML file
+     * @param fileName
+     */
+    public void importIocsFromOpenIocXml(String fileName){
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new File(fileName));
+        XPath xPath =  XPathFactory.newInstance().newXPath();
+        String expression = "/criteria/Indicator/IndicatorItem[Context/@document='']";     
+        NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(doc, XPathConstants.NODESET);
+    }
+
 
     /**
      * Get the number of IOCs in this checker
