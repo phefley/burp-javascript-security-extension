@@ -327,6 +327,8 @@ public class BurpExtender implements IBurpExtender, IScannerCheck, ITab
         // Get the response contents for the passive scan
         String response = helpers.bytesToString(baseRequestResponse.getResponse());
         String html = "";
+        // Set the headers for the request
+        scriptFinder.setRequestHeaders(helpers.analyzeRequest(baseRequestResponse).getHeaders());
         
         log(currentScanNumber, url, "starting passive checks.");
 

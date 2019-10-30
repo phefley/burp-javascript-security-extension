@@ -147,7 +147,8 @@ public class ScriptFinder{
      * @param headers - a list of request headers
      */
     public void setRequestHeaders(List<String> headers){
-        Collections.copy(requestHeaders, headers);
+        requestHeaders = new ArrayList<>();
+        requestHeaders.addAll(headers);
     }
 
 
@@ -195,28 +196,50 @@ public class ScriptFinder{
     }
 
     /**
+     * sets the driver's cookies up based on the requestHeaders set
+     */
+    private void setDriverCookies(){
+        // You can't set cookies until you have the domain set in the DOM, this is a fix for that
+        try {
+            driver.get(url);
+        }
+        catch (TimeoutException e){
+            System.err.println("[" + url + "][-] - timeout when connecting.");
+        }
+
+        // Set the driver's cookies based on the headers, if there are any
+        if (requestHeaders != null){
+            for (String header: requestHeaders){
+                if (header.startsWith("Cookie: ")){
+                    // This is a cookie header, split it up
+                    String cookieString = header.substring(8,header.length());
+                    for (String kvPair : cookieString.split(";")){
+                        String key = kvPair.split("=")[0].trim();
+                        String value = kvPair.split("=")[1].trim();
+                        Cookie cookieObj = new Cookie(key, value);
+                        try {
+                            driver.manage().addCookie(cookieObj);
+                        }
+                        catch (org.openqa.selenium.UnableToSetCookieException d){
+                            System.err.println("[JS-SRI][-] Could not set cookie for key " + key + " and value " + value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
      * Load the DOM and check for any referenced scripts
      * Starts and stops the selenium instance
      */
     public void checkForDomScripts(){
         startDriver();
 
-        // Set the driver's cookies based on the headers, if there are any
-        if (requestHeaders != null){
-            for (String header: requestHeaders){
-                if (header.startsWith("Cookie: ")){
-                    // This is a cookie, split it up
-                    String cookieString = header.substring(8,header.length());
-                    for (String kvPair : cookieString.split(";")){
-                        String key = kvPair.split("=")[0];
-                        String value = kvPair.split("=")[1];
-                        Cookie cookieObj = new Cookie(key, value);
-                        driver.manage().setCookie(cookieObj);
-                    }
-                }
-            }
-        }
+        setDriverCookies();
 
+        // Now actually get the page
         try {
             driver.get(url);
         }
