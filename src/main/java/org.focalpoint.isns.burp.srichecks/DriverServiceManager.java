@@ -37,7 +37,7 @@ import java.io.InputStream;
 public class DriverServiceManager {
 
     private String chromeDriverFilePath;
-    private static String DEFAULT_DRIVER_PATH = "/usr/lib/chromium-browser/chromedriver";
+    private static String DEFAULT_DRIVER_PATH = ["/usr/lib/chromium-browser/chromedriver", "/usr/lib/chromium/chromedriver"];
     private final static String SETTING_CHROMEDRIVER_PATH = "jssecurity.chromedriverpath";
     private ChromeDriverService service;
     private IBurpExtenderCallbacks myCallbacks;
