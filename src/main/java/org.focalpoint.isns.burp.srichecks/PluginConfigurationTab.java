@@ -118,17 +118,20 @@ public class PluginConfigurationTab extends JPanel implements ActionListener{
 		// Driver chooser wiring
 		driverChooser = new JFileChooser();
 
-		// Try to set a default based on the settings
-		if (extensionCallbacks.loadExtensionSetting(SETTING_CHROMEDRIVER_PATH) != null){
-			File settingDriverPath = new File(extensionCallbacks.loadExtensionSetting(SETTING_CHROMEDRIVER_PATH));
-			driverChooser.setSelectedFile(settingDriverPath);
-		}
-
 		driverChooserLabel = new JLabel("Select the chromedriver to use:");
 		layout.putConstraint(SpringLayout.NORTH, driverChooserLabel, 5, SpringLayout.SOUTH, titleLabel);
 		layout.putConstraint(SpringLayout.WEST, driverChooserLabel, 5, SpringLayout.WEST, getInstance());
-
-		filePathField = new JTextField("NONE");
+		
+		// Try to set a default based on the settings
+		if (extensionCallbacks.loadExtensionSetting(SETTING_CHROMEDRIVER_PATH) != null){
+			filePathField = new JTextField(extensionCallbacks.loadExtensionSetting(SETTING_CHROMEDRIVER_PATH));
+			File settingDriverPath = new File(extensionCallbacks.loadExtensionSetting(SETTING_CHROMEDRIVER_PATH));
+			driverChooser.setSelectedFile(settingDriverPath);
+		} else {
+			filePathField = new JTextField("None");
+		}
+		
+		
 		filePathField.setColumns(MAX_FILE_FIELD_COLS);
 		filePathField.setEditable(false);
 		layout.putConstraint(SpringLayout.WEST, filePathField, 5, SpringLayout.EAST, driverChooserLabel);
