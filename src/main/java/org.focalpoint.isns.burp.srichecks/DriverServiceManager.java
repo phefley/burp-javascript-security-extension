@@ -44,7 +44,7 @@ public class DriverServiceManager {
 
     public DriverServiceManager(){
         // Just default to the default driver path
-        chromeDriverFilePath = DEFAULT_DRIVER_PATH;
+        chromeDriverFilePath = null;
     }
 
     public void setCallbacks(IBurpExtenderCallbacks cb){
@@ -57,18 +57,20 @@ public class DriverServiceManager {
 
 
     public void startDriverService(){
-        try{
-            // https://seleniumhq.github.io/selenium/docs/api/java/
-            File driverFile;
-            driverFile = new File(chromeDriverFilePath);
-            service = new ChromeDriverService.Builder().usingDriverExecutable(driverFile).usingAnyFreePort().build();
-            service.start();
-        }
-        catch (IOException e){
-            System.err.println("[JS-SRI][-] Could not start chromedriver service");
-        }
-        catch (IllegalStateException e){
-            System.err.println("[JS-SRI][-] Could not start chromedriver service");
+        if (chromeDriverFilePath != null) {
+            try{
+                // https://seleniumhq.github.io/selenium/docs/api/java/
+                File driverFile;
+                driverFile = new File(chromeDriverFilePath);
+                service = new ChromeDriverService.Builder().usingDriverExecutable(driverFile).usingAnyFreePort().build();
+                service.start();
+            }
+            catch (IOException e){
+                System.err.println("[JS-SRI][-] Could not start chromedriver service");
+            }
+            catch (IllegalStateException e){
+                System.err.println("[JS-SRI][-] Could not start chromedriver service");
+            }
         }
     }
 
